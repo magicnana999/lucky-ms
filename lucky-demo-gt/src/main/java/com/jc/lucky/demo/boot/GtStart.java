@@ -1,4 +1,4 @@
-package com.jc.lucky.demo;
+package com.jc.lucky.demo.boot;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -14,11 +14,11 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients(basePackages = "com.jc.lucky.common.api")
 @SpringBootApplication(scanBasePackages = "com.jc")
 @MapperScan("com.jc.lucky.repository")
-public class UserStart {
+public class GtStart {
 
-  private static final Logger logger = LoggerFactory.getLogger(UserStart.class);
+  private static final Logger logger = LoggerFactory.getLogger(GtStart.class);
 
   public static void main(String[] args) {
-    SpringApplication.run(UserStart.class, args);
+    SpringApplication.run(GtStart.class, args);
   }
 }

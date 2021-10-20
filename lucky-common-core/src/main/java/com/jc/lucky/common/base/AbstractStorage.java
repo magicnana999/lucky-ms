@@ -12,7 +12,7 @@ public class AbstractStorage {
   public static final int DAY = HOUR * 24;
 
   public static final String SE = ":";
-  public static final String PREFIX = "yy" + SE;
+  public static final String PREFIX = "lucky" + SE;
 
   public static final String OK = "OK";
 

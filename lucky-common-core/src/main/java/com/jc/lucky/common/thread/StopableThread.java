@@ -27,27 +27,27 @@ public class StopableThread extends Thread implements Stopable {
     this.runnable = target;
   }
 
-  public static void main(String[] args) {
-    List<StopableThread> list = new ArrayList();
-
-    for (int j = 0; j < 2; j++) {
-      list.add(
-          new StopableThread(
-              () -> {
-                for (int i = 0; i < 5; i++) {
-                  sleep(1);
-                  System.out.println(Thread.currentThread().getName() + " " + i + " doing");
-                }
-              }));
-    }
-
-    list.forEach(thread -> thread.start());
-
-    sleep(5);
-    System.out.println("现在开始停止");
-    list.forEach(thread -> thread.shutdown());
-    System.out.println("所有线程已停止");
-  }
+//  public static void main(String[] args) {
+//    List<StopableThread> list = new ArrayList();
+//
+//    for (int j = 0; j < 2; j++) {
+//      list.add(
+//          new StopableThread(
+//              () -> {
+//                for (int i = 0; i < 5; i++) {
+//                  sleep(1);
+//                  System.out.println(Thread.currentThread().getName() + " " + i + " doing");
+//                }
+//              }));
+//    }
+//
+//    list.forEach(thread -> thread.start());
+//
+//    sleep(5);
+//    System.out.println("现在开始停止");
+//    list.forEach(thread -> thread.shutdown());
+//    System.out.println("所有线程已停止");
+//  }
 
   public static void sleep(int times) {
     try {

@@ -19,10 +19,6 @@ public class ApiError {
     this.message = message;
   }
 
-  public static void main(String[] args) {
-    ApiError error = new ApiError(100, "hahasdfs  %s");
-    error.format("hello 你好");
-  }
 
   public ApiError format(String msg) {
     return new ApiError(this.getCode(), String.format(this.message, msg));

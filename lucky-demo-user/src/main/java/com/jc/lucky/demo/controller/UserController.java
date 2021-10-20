@@ -27,6 +27,7 @@ public class UserController extends AbstractController {
   private UserService userService;
 
 
+
   @Deprecated
   @ApiOperation("登录-用户名+密码")
   @RequestMapping(value = "/login", method = RequestMethod.POST)

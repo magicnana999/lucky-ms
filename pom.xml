@@ -13,6 +13,7 @@
     <module>lucky-common-alibaba</module>
     <module>lucky-common-api</module>
     <module>lucky-common-parent</module>
+    <module>lucky-demo-user</module>
   </modules>
 
 

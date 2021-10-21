@@ -1,6 +1,7 @@
 package com.jc.lucky.demo.controller;
 
 import com.jc.lucky.common.base.AbstractController;
+import com.jc.lucky.common.vo.UserLoginVo;
 import com.jc.lucky.common.web.ApiResult;
 import com.jc.lucky.demo.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,8 +35,8 @@ public class UserController extends AbstractController {
       @RequestParam(value = "username", required = false) String userName,
       @RequestParam(value = "phone", required = false) String phone) {
 
-    userService.register(userName,phone);
-    return new ApiResult(null);
+    UserLoginVo ret = userService.register(userName,phone);
+    return new ApiResult(ret);
   }
 
 }

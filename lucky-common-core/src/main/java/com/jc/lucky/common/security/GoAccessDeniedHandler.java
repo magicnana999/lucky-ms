@@ -1,5 +1,6 @@
 package com.jc.lucky.common.security;
 
+import com.jc.lucky.common.exception.HttpStatusException;
 import com.jc.lucky.common.json.JSON;
 import com.jc.lucky.common.web.ApiResult;
 import com.jc.lucky.common.web.CorsUtil;
@@ -28,12 +29,15 @@ public class GoAccessDeniedHandler implements AccessDeniedHandler {
 
     logger.error("权限不够" + request.getRequestURI());
 
-    CorsUtil.cors(request, response);
+//    CorsUtil.cors(request, response);
+//
+//    ApiResult result = new ApiResult(response.getStatus(), HttpStatus.FORBIDDEN.getReasonPhrase());
+//    PrintWriter printWriter = response.getWriter();
+//    String body = JSON.toJSONString(result);
+//    printWriter.write(body);
+//    printWriter.flush();
 
-    ApiResult result = new ApiResult(response.getStatus(), HttpStatus.FORBIDDEN.getReasonPhrase());
-    PrintWriter printWriter = response.getWriter();
-    String body = JSON.toJSONString(result);
-    printWriter.write(body);
-    printWriter.flush();
+    throw new HttpStatusException(HttpStatus.FORBIDDEN);
+
   }
 }

@@ -27,3 +27,4 @@ rebel.xml
 *.lck
 *.epoch
 .springBeans
+**/bootstrapt.yaml

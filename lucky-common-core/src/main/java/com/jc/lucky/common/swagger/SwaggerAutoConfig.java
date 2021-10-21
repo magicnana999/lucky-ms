@@ -32,7 +32,7 @@ public class SwaggerAutoConfig {
         new Docket(DocumentationType.SWAGGER_2)
             .apiInfo(
                 new ApiInfoBuilder()
-                    .title("BTB API")
+                    .title("Lucky API")
                     .termsOfServiceUrl("http://www.xx.com/")
                     .contact(new Contact("jinsong", "http://www.xx.com", "magicnana999@126.com"))
                     .version("1.0.1")
@@ -41,7 +41,7 @@ public class SwaggerAutoConfig {
             .groupName("2.X版本")
             .select()
             // 这里指定Controller扫描包路径
-            .apis(RequestHandlerSelectors.basePackage("com.btb"))
+            .apis(RequestHandlerSelectors.basePackage("com.jc"))
             .paths(PathSelectors.any())
             .build();
     if (logger.isInfoEnabled()) {

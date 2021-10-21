@@ -13,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @EnableFeignClients(basePackages = "com.jc.lucky.common.api")
 @SpringBootApplication(scanBasePackages = "com.jc")
-@MapperScan("com.jc.lucky.repository")
+@MapperScan("com.jc.lucky.demo.repository")
 public class UserStart {
 
   private static final Logger logger = LoggerFactory.getLogger(UserStart.class);

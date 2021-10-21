@@ -24,9 +24,10 @@ public class UserService extends AbstractService implements UserApi {
 
 
     @Override
-    public void syncUser(String phone) {
+    public User syncUser(String phone) {
         User user = new User();
         user.setMobile(phone);
         userMapper.insert(user);
+        return user;
     }
 }

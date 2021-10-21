@@ -22,9 +22,9 @@ spring:
 
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    jdbc-url: "jdbc:mysql://192.144.232.45:3306/new_luckgt?verifyServerCertificate=false&useSSL=false&requireSSL=false"
-    username: new_luckgt
-    password: pxixYRJ3RN7BmhTz
+    jdbc-url: "jdbc:mysql://127.0.0.1:3306/new_luckgt?verifyServerCertificate=false&useSSL=false&requireSSL=false"
+    username: root
+    password: root
 
 
 api:

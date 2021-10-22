@@ -20,6 +20,8 @@ import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -172,6 +174,13 @@ public class ErrorInfoBuilder {
         return e0(HttpStatus.BAD_REQUEST, e.getMessage());
       }
 
+    }
+
+    else if (e instanceof BindException){
+      BindException be = (BindException)e;
+      FieldError fe = be.getBindingResult().getFieldError();
+      String msg = fe.getDefaultMessage();
+      return e0(HttpStatus.BAD_REQUEST,msg);
     }
 
     // 在程序中抛出的ApiException，message直接给客户端返回，必须throw new ApiException("验证码不正确");

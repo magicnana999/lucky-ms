@@ -24,7 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-  private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
+  protected static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
 
   @Resource protected UserDetailsService userDetailsService;
 

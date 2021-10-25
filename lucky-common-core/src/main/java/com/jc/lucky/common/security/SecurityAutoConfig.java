@@ -70,4 +70,15 @@ public class SecurityAutoConfig {
     return new BCryptPasswordEncoder();
   }
 
+  @Bean
+  @ConditionalOnMissingBean
+  public TokenReceiver tokenReceiver(){
+    return new TokenReceiver();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public TokenParser tokenParser(){
+    return new TokenParser();
+  }
 }

@@ -24,9 +24,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-  protected static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
+  protected static final Logger logger =
+      LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
 
-  @Resource protected UserDetailsService userDetailsService;
+  @Resource protected TokenReceiver tokenReceiver;
+
+  @Resource protected TokenParser tokenParser;
 
   @Override
   protected void doFilterInternal(
@@ -35,36 +38,31 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     preHandle(request);
 
-    String auth_token = request.getHeader(SecurityAutoConfig.HEADER_TOKEN_KEY);
+    String token = tokenReceiver.getToken(request);
     if (logger.isDebugEnabled()) {
-      logger.debug("token:{}", auth_token);
+      logger.debug("token:{}", token);
     }
 
-    final String auth_token_start = SecurityAutoConfig.HEADER_TOKEN_PRE + " ";
-    if (StringUtils.isNotEmpty(auth_token) && auth_token.startsWith(auth_token_start)) {
-      auth_token = auth_token.substring(auth_token_start.length());
-      ApiContext.getContext().setToken(auth_token);
+    if (StringUtils.isNotBlank(token)) {
 
-      if (StringUtils.isNotBlank(auth_token)) {
-        UserDetails userDetail =
-            userDetailsService.loadUserByUsername(auth_token + "___" + request.getRequestURI());
-        if (userDetail == null || StringUtils.isBlank(userDetail.getUsername())) {
+      ApiContext.getContext().setToken(token);
 
-        } else {
-          if (logger.isDebugEnabled()) {
-            logger.debug("{}:{}", userDetail.getUsername(), userDetail.getAuthorities());
-          }
+      UserDetails userDetail = tokenParser.parseToken(token);
 
-          UsernamePasswordAuthenticationToken authentication =
-              new UsernamePasswordAuthenticationToken(
-                  userDetail.getUsername(), null, userDetail.getAuthorities());
-          authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-          SecurityContextHolder.getContext().setAuthentication(authentication);
-          ApiContext.getContext().setUserId(Long.valueOf(userDetail.getUsername()));
+      if (userDetail != null && StringUtils.isNotBlank(userDetail.getUsername())) {
+
+        if (logger.isDebugEnabled()) {
+          logger.debug("{}:{}", userDetail.getUsername(), userDetail.getAuthorities());
         }
+
+        UsernamePasswordAuthenticationToken authentication =
+            new UsernamePasswordAuthenticationToken(
+                userDetail.getUsername(), null, userDetail.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        ApiContext.getContext().setUserId(Long.valueOf(userDetail.getUsername()));
       }
     }
-
     chain.doFilter(request, response);
 
     postHandle(request);

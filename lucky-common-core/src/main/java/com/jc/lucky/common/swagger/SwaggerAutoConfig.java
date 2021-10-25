@@ -3,6 +3,7 @@ package com.jc.lucky.common.swagger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -27,6 +28,7 @@ public class SwaggerAutoConfig {
   private static final Logger logger = LoggerFactory.getLogger(SwaggerAutoConfig.class);
 
   @Bean
+  @ConditionalOnMissingBean
   public Docket defaultDocket() {
     Docket docket =
         new Docket(DocumentationType.SWAGGER_2)

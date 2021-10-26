@@ -1,5 +1,6 @@
 package com.jc.lucky.common.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +36,9 @@ public class LiuyiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
     this.authenticationEntryPoint = authenticationEntryPoint;
     this.authenticationTokenFilter = jwtAuthenticationTokenFilter;
   }
+
+  @Autowired(required = false)
+  public WebSecurityAppender webSecurityAppender;
 
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -79,6 +83,10 @@ public class LiuyiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
             "/swagger-resources",
             "/swagger-resources/configuration/security",
             "/swagger-ui.html");
+
+    if(webSecurityAppender!=null){
+      webSecurityAppender.configure(web);
+    }
   }
 
   @Override

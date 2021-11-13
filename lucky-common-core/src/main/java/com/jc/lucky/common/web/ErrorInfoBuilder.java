@@ -179,9 +179,12 @@ public class ErrorInfoBuilder {
 
     else if (e instanceof MethodArgumentNotValidException){
       MethodArgumentNotValidException be = (MethodArgumentNotValidException)e;
-      FieldError fe = be.getBindingResult().getFieldError();
-      String msg = fe.getDefaultMessage();
-      return e0(HttpStatus.BAD_REQUEST,msg);
+      StringBuffer stringBuffer = new StringBuffer();
+      for(FieldError fe : be.getBindingResult().getFieldErrors()){
+        stringBuffer.append(fe.getField()+" "+fe.getDefaultMessage()+",");
+      }
+      stringBuffer.delete(stringBuffer.length()-2,stringBuffer.length()-1);
+      return e0(HttpStatus.BAD_REQUEST,stringBuffer.toString());
     }
 
     // 在程序中抛出的ApiException，message直接给客户端返回，必须throw new ApiException("验证码不正确");

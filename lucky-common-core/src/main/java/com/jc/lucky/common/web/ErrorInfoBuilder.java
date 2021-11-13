@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -176,8 +177,8 @@ public class ErrorInfoBuilder {
 
     }
 
-    else if (e instanceof BindException){
-      BindException be = (BindException)e;
+    else if (e instanceof MethodArgumentNotValidException){
+      MethodArgumentNotValidException be = (MethodArgumentNotValidException)e;
       FieldError fe = be.getBindingResult().getFieldError();
       String msg = fe.getDefaultMessage();
       return e0(HttpStatus.BAD_REQUEST,msg);

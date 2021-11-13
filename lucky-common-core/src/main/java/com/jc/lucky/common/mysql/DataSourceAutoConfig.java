@@ -8,11 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author magicnana
  * @date 2019/3/1 下午6:38
  */
+@EnableTransactionManagement
 @Configuration
 public class DataSourceAutoConfig extends BaseConfig {
 

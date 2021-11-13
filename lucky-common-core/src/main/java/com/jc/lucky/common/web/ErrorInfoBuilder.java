@@ -183,7 +183,7 @@ public class ErrorInfoBuilder {
       for(FieldError fe : be.getBindingResult().getFieldErrors()){
         stringBuffer.append(fe.getField()+" "+fe.getDefaultMessage()+",");
       }
-      stringBuffer.delete(stringBuffer.length()-2,stringBuffer.length()-1);
+      stringBuffer.delete(stringBuffer.length()-1,stringBuffer.length());
       return e0(HttpStatus.BAD_REQUEST,stringBuffer.toString());
     }
 

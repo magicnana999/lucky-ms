@@ -8,6 +8,7 @@
   <artifactId>lucky-ms</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
+
   <modules>
     <module>lucky-ms-core</module>
     <module>lucky-ms-alibaba</module>

@@ -11,9 +11,6 @@
   <modules>
     <module>lucky-common-core</module>
     <module>lucky-common-alibaba</module>
-    <module>lucky-common-api</module>
-    <module>lucky-demo-user</module>
-    <module>lucky-demo-gt</module>
   </modules>
 
 

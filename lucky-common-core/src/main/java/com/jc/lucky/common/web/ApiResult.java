@@ -12,7 +12,7 @@ public final class ApiResult<T> implements java.io.Serializable {
   private static final long serialVersionUID = -3292747658038585878L;
 
   private int code;
-  private String msg;
+  private String message;
   private T data;
 
   public ApiResult() {
@@ -27,7 +27,7 @@ public final class ApiResult<T> implements java.io.Serializable {
 
   public ApiResult(int code, String message) {
     this.code = code;
-    this.msg = message;
+    this.message = message;
     this.data = data == null ? (T) Collections.emptyMap() : data;
   }
 
@@ -47,12 +47,12 @@ public final class ApiResult<T> implements java.io.Serializable {
     this.data = data;
   }
 
-  public String getMsg() {
-    return msg;
+  public String getMessage() {
+    return message;
   }
 
-  public void setMsg(String message) {
-    this.msg = message;
+  public void setMessage(String message) {
+    this.message = message;
   }
 
   @Override
@@ -60,7 +60,7 @@ public final class ApiResult<T> implements java.io.Serializable {
     return "{\"code\":"
         + code
         + ",\"msg\":\""
-        + msg
+        + message
         + "\", \"data\":"
         + (data == null ? "" : data.toString())
         + '}';

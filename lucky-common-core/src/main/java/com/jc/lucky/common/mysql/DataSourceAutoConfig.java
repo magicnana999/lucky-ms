@@ -1,6 +1,5 @@
 package com.jc.lucky.common.mysql;
 
-import com.jc.lucky.common.web.BaseConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @Configuration
-public class DataSourceAutoConfig extends BaseConfig {
+public class DataSourceAutoConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(DataSourceAutoConfig.class);
 
@@ -24,9 +23,6 @@ public class DataSourceAutoConfig extends BaseConfig {
   @ConfigurationProperties(prefix = "spring.datasource")
   public DataSource dataSource() {
     HikariDataSource ds = new HikariDataSource();
-    ds.setMaximumPoolSize(MAX_THREADS);
-    ds.setMinimumIdle(MIN_THREADS);
-
     if (logger.isInfoEnabled()) {
       logger.info("start -> DataSource");
     }

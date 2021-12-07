@@ -1,6 +1,5 @@
 package com.jc.lucky.common.util;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -8,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.ConnectionPool;
 import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.MediaType;
@@ -17,8 +17,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.commons.httpclient.DefaultOkHttpClientConnectionPoolFactory;
-import org.springframework.cloud.commons.httpclient.DefaultOkHttpClientFactory;
 
 /**
  * 朝辞白帝彩云间 千行代码一日还 两岸领导啼不住 地铁已到回龙观
@@ -91,8 +89,8 @@ public class OkHttp3Util {
     Call call = client.newCall(request);
     try {
       return new Resp(call.execute());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    } catch (Throwable e) {
+      return new Resp(e);
     }
   }
 
@@ -120,8 +118,8 @@ public class OkHttp3Util {
     Call call = client.newCall(request);
     try {
       return new Resp(call.execute());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    } catch (Throwable e) {
+      return new Resp(e);
     }
   }
 
@@ -333,14 +331,11 @@ public class OkHttp3Util {
   private static class SingletonHolder {
 
     private static final OkHttpClient INSTANCE =
-        new DefaultOkHttpClientFactory(new OkHttpClient.Builder())
-            .createBuilder(false)
+        new OkHttpClient.Builder()
             .connectTimeout(2000, TimeUnit.MILLISECONDS)
             .readTimeout(5000, TimeUnit.MILLISECONDS)
-            .followRedirects(false)
-            .connectionPool(
-                new DefaultOkHttpClientConnectionPoolFactory()
-                    .create(Runtime.getRuntime().availableProcessors(), 15 * 60L, TimeUnit.SECONDS))
+            .writeTimeout(2000, TimeUnit.MILLISECONDS)
+            .connectionPool(new ConnectionPool())
             .build();
   }
 
@@ -349,13 +344,22 @@ public class OkHttp3Util {
     private String body;
     private int code;
     private Map<String, String> headers;
-    private boolean isSuccessful;
+    private boolean isSuccessful = false;
+    private boolean isError = true;
+    private String errorMsg;
     private boolean isRedirect;
     private String protocol;
+
+    public Resp(Throwable e) {
+      this.isError = true;
+      this.errorMsg = e == null ? "empty message" : e.getMessage();
+      this.isSuccessful = false;
+    }
 
     public Resp(Response response) {
 
       if (response != null) {
+        this.isError = false;
         this.code = response.code();
         this.isSuccessful = response.isSuccessful();
         this.isRedirect = response.isRedirect();
@@ -369,9 +373,12 @@ public class OkHttp3Util {
         }
         try {
           this.body = response.body().string();
-        } catch (IOException e) {
+        } catch (Throwable e) {
           throw new RuntimeException(e);
         }
+      } else {
+        this.isError = true;
+        this.errorMsg = "no response found";
       }
     }
 
@@ -396,7 +403,7 @@ public class OkHttp3Util {
     }
 
     public boolean isSuccessful() {
-      return isSuccessful;
+      return isSuccessful && !isError;
     }
 
     public String toDetail() {
@@ -412,7 +419,10 @@ public class OkHttp3Util {
     @Override
     public String toString() {
       final StringBuilder sb = new StringBuilder("{");
-      sb.append("\"body\":\"").append(body).append('\"');
+      sb.append("\"error:\"").append(isError);
+      sb.append(",\"errorMsg:\"").append(errorMsg);
+      sb.append(",\"successful:\"").append(isSuccessful);
+      sb.append(",\"body\":\"").append(body).append('\"');
       sb.append(",\"code\":").append(code);
       sb.append('}');
       return sb.toString();

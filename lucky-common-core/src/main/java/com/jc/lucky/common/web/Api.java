@@ -51,7 +51,7 @@ public @interface Api {
         }
       };
 
-  Api DEFAULT_API =
+  Api PUBLIC_API =
       new Api() {
         @Override
         public Class<? extends Annotation> annotationType() {

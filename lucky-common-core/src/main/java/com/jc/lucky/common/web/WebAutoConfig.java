@@ -34,26 +34,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @date 2021/8/9 17:48
  */
 @Configuration
-public class WebAutoConfig extends BaseConfig implements WebMvcConfigurer {
+public class WebAutoConfig implements WebMvcConfigurer {
 
   private static final Logger logger = LoggerFactory.getLogger(WebAutoConfig.class);
 
-  @Bean
-  public UndertowWebServerFactoryCustomizer customUndertowWebServerFactoryCustomizer(
-      Environment environment, ServerProperties serverProperties) {
-    return new UndertowWebServerFactoryCustomizer(environment, serverProperties) {
-      @Override
-      public void customize(ConfigurableUndertowWebServerFactory factory) {
-        super.customize(factory);
-        factory.setIoThreads(MIN_THREADS);
-        factory.setWorkerThreads(MAX_THREADS);
-
-        if (logger.isInfoEnabled()) {
-          logger.info("start -> set threads in UndertowWebServerFactoryCustomizer");
-        }
-      }
-    };
-  }
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
@@ -131,6 +115,6 @@ public class WebAutoConfig extends BaseConfig implements WebMvcConfigurer {
   @Bean
   @ConditionalOnMissingBean
   public Api defaultApi(){
-    return Api.DEFAULT_API;
+    return Api.PUBLIC_API;
   }
 }

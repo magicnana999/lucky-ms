@@ -8,9 +8,13 @@ import com.jc.lucky.common.exception.ErrorCodeException;
 import com.jc.lucky.common.exception.HttpStatusException;
 import com.jc.lucky.common.json.JSON;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,7 +79,7 @@ public class ErrorInfoBuilder {
         "error [{}:{}] {}",
         httpStatus.value(),
         httpStatus.getReasonPhrase(),
-        apiResult.getMsg());
+        apiResult.getMessage());
     return getResponseEntity(apiResult, httpStatus);
   }
 
@@ -175,6 +179,25 @@ public class ErrorInfoBuilder {
         return e0(HttpStatus.BAD_REQUEST, e.getMessage());
       }
 
+    }
+
+    else if (e instanceof BindException){
+      BindException be = (BindException)e;
+      FieldError fe = be.getBindingResult().getFieldError();
+      String msg = fe.getDefaultMessage();
+      return e0(HttpStatus.BAD_REQUEST,msg);
+    }
+
+    // @Validated 表单方式参数验证提示
+    else if (e instanceof ConstraintViolationException){
+      ConstraintViolationException be = (ConstraintViolationException)e;
+      String localizedMessage = be.getLocalizedMessage();
+      System.out.println("localizedMessage = " + localizedMessage);
+      List<String> defaultMsg = be.getConstraintViolations()
+              .stream()
+              .map(ConstraintViolation::getMessage)
+              .collect(Collectors.toList());
+      return e0(HttpStatus.BAD_REQUEST,defaultMsg.get(0));
     }
 
     else if (e instanceof MethodArgumentNotValidException){

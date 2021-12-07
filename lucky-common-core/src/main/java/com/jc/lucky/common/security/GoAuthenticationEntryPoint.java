@@ -31,13 +31,6 @@ public class GoAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     CorsUtil.cors(request, response);
 
-//    ApiResult result =
-//        new ApiResult(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
-//    PrintWriter printWriter = response.getWriter();
-//    String body = JSON.toJSONString(result);
-//    printWriter.write(body);
-//    printWriter.flush();
-
     throw new HttpStatusException(HttpStatus.UNAUTHORIZED);
   }
 }

@@ -1,5 +1,6 @@
 package com.creolophus.lucky.common.web;
 
+import com.creolophus.lucky.common.context.ApiContext;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +26,7 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
       if (api == null) {
         api = defaultApi;
       }
-
+      ApiContext.getContext().setApi(api);
       apiHandler.handle(api, request);
     }
   }

@@ -1,14 +1,26 @@
 package com.creolophus.lucky.common.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 默认不忽略 Null 属性,但是这里已配置 SimpleDateFormat已指定 Object 或者泛型属性 有可能是 LinkedHashMap Object 或者泛型属性,如果制定
@@ -20,26 +32,69 @@ import java.util.TimeZone;
  */
 public class JacksonUtil {
 
-  /**
-   * 这里有一个栗子:
-   * https://github.com/easonjim/5_java_example/blob/master/springboottest/springboottest10/src/main/java/com/jsoft/springboottest/springboottest1
-   * /controller/TestController.java
-   */
-  private static ObjectMapper mapper = new ObjectMapper();
+  private static ObjectMapper objectMapper;
+
+  public static ObjectMapper getObjectMapper(){
+    return objectMapper;
+  }
+
+  public static ObjectMapper init(){
+
+    if(objectMapper!=null){
+      return objectMapper;
+    }
+
+    objectMapper = new ObjectMapper();
+
+    // 通过该方法对mapper对象进行设置，所有序列化的对象都将按改规则进行系列化
+    // Include.Include.ALWAYS 默认
+    // Include.NON_DEFAULT 属性为默认值不序列化
+    // Include.NON_EMPTY 属性为 空（""） 或者为 NULL 都不序列化，则返回的json是没有这个字段的。这样对移动端会更省流量
+    // Include.NON_NULL 属性为NULL 不序列化
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+
+    objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+    objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
+
+    SimpleModule simpleModule = new SimpleModule();
+    simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
+    simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+
+    simpleModule.addDeserializer(
+        String.class,
+        new StdDeserializer<String>(String.class) {
+          @Override
+          public String deserialize(JsonParser p, DeserializationContext ctxt)
+              throws IOException {
+            String result = StringDeserializer.instance.deserialize(p, ctxt);
+            if (StringUtils.isEmpty(result)) {
+              return null;
+            }
+            return result;
+          }
+        });
+
+    objectMapper.registerModule(simpleModule);
+
+    JavaTimeModule javaTimeModule = new JavaTimeModule();
+    javaTimeModule.addSerializer(
+        LocalDateTime.class,
+        new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    javaTimeModule.addDeserializer(
+        LocalDateTime.class,
+        new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    objectMapper.registerModule(javaTimeModule);
+
+    return objectMapper;
+  }
 
   static {
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-    mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-    mapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-  }
-
-  public static synchronized void init(ObjectMapper input) {
-    mapper = input;
-  }
-
-  public static ObjectMapper mapper() {
-    return mapper;
+    objectMapper = init();
   }
 
   public static byte[] toByteArray(Object obj) {
@@ -47,7 +102,7 @@ public class JacksonUtil {
       return null;
     }
     try {
-      return mapper.writeValueAsBytes(obj);
+      return objectMapper.writeValueAsBytes(obj);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
@@ -58,7 +113,7 @@ public class JacksonUtil {
       return null;
     }
     try {
-      return mapper.readValue(bytes, clazz);
+      return objectMapper.readValue(bytes, clazz);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -70,7 +125,7 @@ public class JacksonUtil {
     }
 
     try {
-      return mapper.readValue(string, type);
+      return objectMapper.readValue(string, type);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -81,7 +136,7 @@ public class JacksonUtil {
       return null;
     }
     try {
-      return mapper.readValue(bytes, type);
+      return objectMapper.readValue(bytes, type);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -92,7 +147,7 @@ public class JacksonUtil {
       return null;
     }
     try {
-      return mapper.readValue(string, type);
+      return objectMapper.readValue(string, type);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -103,7 +158,7 @@ public class JacksonUtil {
       return null;
     }
     try {
-      return mapper.readValue(bytes, type);
+      return objectMapper.readValue(bytes, type);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -115,7 +170,7 @@ public class JacksonUtil {
     }
 
     try {
-      return mapper.readValue(string, clazz);
+      return objectMapper.readValue(string, clazz);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -125,7 +180,7 @@ public class JacksonUtil {
     if (object == null) {
       return null;
     }
-    return mapper.convertValue(object, clazz);
+    return objectMapper.convertValue(object, clazz);
   }
 
   public static String toJson(Object obj) {
@@ -133,7 +188,7 @@ public class JacksonUtil {
       return null;
     }
     try {
-      return mapper.writeValueAsString(obj);
+      return objectMapper.writeValueAsString(obj);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }

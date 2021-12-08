@@ -1,25 +1,20 @@
 package com.creolophus.lucky.common.web;
 
 import com.creolophus.lucky.common.endpoint.BeanInfoEndpoint;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.creolophus.lucky.common.json.GsonUtil;
+import com.creolophus.lucky.common.json.JacksonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -33,7 +28,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebAutoConfig implements WebMvcConfigurer {
 
   private static final Logger logger = LoggerFactory.getLogger(WebAutoConfig.class);
-
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
@@ -58,42 +52,43 @@ public class WebAutoConfig implements WebMvcConfigurer {
     return new ApiInterceptor();
   }
 
+//  @Override
+//  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+//    WebMvcConfigurer.super.configureMessageConverters(converters);
+//  }
+
+  @Bean
+  @Primary
+  public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+    return new MappingJackson2HttpMessageConverter(jacksonObjectMapper());
+  }
+
+  @Bean
+  @Primary
+  public ObjectMapper jacksonObjectMapper() {
+
+    ObjectMapper objectMapper = JacksonUtil.getObjectMapper();
+
+    if (logger.isInfoEnabled()) {
+      logger.info("start -> objectMapper");
+    }
+
+    return objectMapper;
+  }
+
   @Bean
   @ConditionalOnMissingBean
   public HttpMessageConverters httpMessageConverters() {
 
-    /** JacksonMessageConverter */
-    MappingJackson2HttpMessageConverter jackson2HttpMessageConverter =
-        new LiuyiMappingJackson2HttpMessageConverter();
-    ObjectMapper objectMapper = jackson2HttpMessageConverter.getObjectMapper();
-    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-    objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-    SimpleModule simpleModule = new SimpleModule();
-    simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
-    simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
-    objectMapper.registerModule(simpleModule);
-    JavaTimeModule javaTimeModule = new JavaTimeModule();
-    javaTimeModule.addSerializer(
-        LocalDateTime.class,
-        new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-    javaTimeModule.addDeserializer(
-        LocalDateTime.class,
-        new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-    objectMapper.registerModule(javaTimeModule);
-    jackson2HttpMessageConverter.setObjectMapper(objectMapper);
-
-    /** GSonMessageConverter */
     GsonHttpMessageConverter gsonHttpMessageConverter = new LiuyiGsonHttpMessageConverter();
-    Gson gson = (new GsonBuilder()).setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+    Gson gson = GsonUtil.gson();
     gsonHttpMessageConverter.setGson(gson);
 
     if (logger.isInfoEnabled()) {
-      logger.info("start -> addMessageConverters Jackson2HttpMessageConverter");
       logger.info("start -> addMessageConverters GSonHttpMessageConverter");
     }
 
-    return new HttpMessageConverters(jackson2HttpMessageConverter, gsonHttpMessageConverter);
+    return new HttpMessageConverters(gsonHttpMessageConverter,mappingJackson2HttpMessageConverter());
   }
 
   @Bean
@@ -103,14 +98,13 @@ public class WebAutoConfig implements WebMvcConfigurer {
   }
 
   @Bean
-  public BeanInfoEndpoint beanInfoEndpoint(){
+  public BeanInfoEndpoint beanInfoEndpoint() {
     return new BeanInfoEndpoint();
   }
 
-
   @Bean
   @ConditionalOnMissingBean
-  public Api defaultApi(){
+  public Api defaultApi() {
     return Api.PUBLIC_API;
   }
 }

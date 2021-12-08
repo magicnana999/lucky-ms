@@ -38,10 +38,6 @@ public class GsonUtil {
     return gson;
   }
 
-  public static synchronized void init(Gson input) {
-    gson = input;
-  }
-
   public static byte[] toByteArray(Object obj) {
     if (obj == null) {
       return null;

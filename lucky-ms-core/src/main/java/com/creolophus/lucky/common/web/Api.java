@@ -25,7 +25,7 @@ public @interface Api {
   String ENCRYPT_RSA = "RSA";
   String ENCRYPT_NONE = "NONE";
 
-  String INTERNAL_HEADER_KEY = "X-BTB-Inter";
+  String INTERNAL_HEADER_KEY = "X-LiuYi-Inter";
   String INTERNAL_HEADER_VAL = "BMW525LIBENZGLE4504MATICPANAMERA";
 
   Api INTERNAL_API =

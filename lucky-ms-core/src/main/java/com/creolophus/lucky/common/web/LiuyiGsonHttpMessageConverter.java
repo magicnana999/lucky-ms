@@ -14,15 +14,7 @@ public class LiuyiGsonHttpMessageConverter extends GsonHttpMessageConverter {
 
   @Override
   public boolean canRead(Type type, Class<?> contextClass, MediaType mediaType) {
-
-    Api api = (Api) ApiContext.getContext().getApi();
-    if (api != null
-        && StringUtils.isNotBlank(api.scope())
-        && Api.SCOPE_INTERNAL.equalsIgnoreCase(api.scope())) {
-      return super.canRead(type, contextClass, mediaType);
-    } else {
-      return false;
-    }
+    return false;
   }
 
   @Override

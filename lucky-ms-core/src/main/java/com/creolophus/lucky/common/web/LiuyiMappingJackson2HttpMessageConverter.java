@@ -1,6 +1,7 @@
 package com.creolophus.lucky.common.web;
 
 import com.creolophus.lucky.common.context.ApiContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Type;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ public class LiuyiMappingJackson2HttpMessageConverter extends MappingJackson2Htt
       Type type, @Nullable Class<?> contextClass, @Nullable MediaType mediaType) {
 
     Api api = (Api) ApiContext.getContext().getApi();
+
     if (api == null
         || StringUtils.isBlank(api.scope())
         || !Api.SCOPE_INTERNAL.equalsIgnoreCase(api.scope())) {

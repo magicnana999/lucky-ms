@@ -15,7 +15,7 @@ public class ApiHandler {
     handleScope(api,request);
   }
 
-  private void handleScope(Api api, HttpServletRequest request) {
+  protected void handleScope(Api api, HttpServletRequest request) {
     if(api.scope().equals(Api.SCOPE_INTERNAL)){
       String header = request.getHeader(Api.INTERNAL_HEADER_KEY);
       if(StringUtils.isBlank(header) || !header.equals(Api.INTERNAL_HEADER_VAL)){

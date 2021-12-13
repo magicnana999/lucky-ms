@@ -27,12 +27,12 @@ public class ApiContextFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain chain)
       throws ServletException, IOException {
 
+    CorsUtil.cors(request, response);
     if (HttpMethod.OPTIONS.toString().equals(request.getMethod())) {
       response.setStatus(HttpStatus.OK.value());
       return;
     }
 
-    CorsUtil.cors(request, response);
     MdcUtil.init(request.getRequestURI(), null);
     chain.doFilter(request, response);
     if (logger.isInfoEnabled()) {

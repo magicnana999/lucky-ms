@@ -1,5 +1,6 @@
 package com.creolophus.lucky.common.security;
 
+import com.creolophus.lucky.common.web.CorsUtil;
 import com.creolophus.lucky.common.web.MdcUtil;
 import com.creolophus.lucky.common.context.ApiContext;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,12 +38,21 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain chain)
       throws ServletException, IOException {
 
+    CorsUtil.cors(request, response);
+    if (HttpMethod.OPTIONS.toString().equals(request.getMethod())) {
+      response.setStatus(HttpStatus.OK.value());
+      return;
+    }
+
+
+
     preHandle(request);
 
     String token = tokenReceiver.getToken(request);
     if (logger.isDebugEnabled()) {
       logger.debug("token:{}", token);
     }
+
 
     if (StringUtils.isNotBlank(token)) {
 

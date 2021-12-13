@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -178,7 +179,10 @@ public class ErrorInfoBuilder {
       } catch (Throwable eee) {
         return e0(HttpStatus.BAD_REQUEST, e.getMessage());
       }
+    }
 
+    else if( e instanceof AuthenticationException){
+      return e0(HttpStatus.UNAUTHORIZED);
     }
 
     else if (e instanceof BindException){

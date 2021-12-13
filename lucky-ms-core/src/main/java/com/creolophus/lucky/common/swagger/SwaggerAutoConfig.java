@@ -43,7 +43,8 @@ public class SwaggerAutoConfig {
             .groupName("2.X版本")
             .select()
             // 这里指定Controller扫描包路径
-            .apis(RequestHandlerSelectors.basePackage("com.creolophus"))
+//            .apis(RequestHandlerSelectors.basePackage("com.creolophus"))
+            .apis(RequestHandlerSelectors.any())
             .paths(PathSelectors.any())
             .build();
     if (logger.isInfoEnabled()) {

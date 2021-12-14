@@ -82,6 +82,7 @@ public class ErrorInfoBuilder {
         httpStatus.value(),
         httpStatus.getReasonPhrase(),
         apiResult.getMessage());
+    apiResult.setCode(httpStatus.value());
     return getResponseEntity(apiResult, httpStatus);
   }
 

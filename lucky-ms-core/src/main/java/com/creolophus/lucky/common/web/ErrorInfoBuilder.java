@@ -2,6 +2,7 @@ package com.creolophus.lucky.common.web;
 
 import com.creolophus.lucky.common.context.ApiContext;
 import com.creolophus.lucky.common.error.ApiError;
+import com.creolophus.lucky.common.exception.AccessDeniedException;
 import com.creolophus.lucky.common.exception.ApiException;
 import com.creolophus.lucky.common.exception.BrokenException;
 import com.creolophus.lucky.common.exception.ErrorCodeException;
@@ -152,6 +153,12 @@ public class ErrorInfoBuilder {
     //    else if (e instanceof ConstraintViolationException) {
     //      return e0(HttpStatus.BAD_REQUEST, e.getMessage());
     //    }
+
+    else if(e instanceof AccessDeniedException){
+      AccessDeniedException ee = (AccessDeniedException) e;
+      return e0(HttpStatus.FORBIDDEN,ee.getApiResult());
+
+    }
 
     // Security相关的401和403异常，走这里。但是，必须有额外的message
     else if (e instanceof HttpStatusException) {

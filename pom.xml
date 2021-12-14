@@ -79,6 +79,21 @@
   <dependencyManagement>
 
     <dependencies>
+
+
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt</artifactId>
+        <version>0.9.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>29.0-jre</version>
+      </dependency>
+
+
       <!-- external json -->
       <dependency>
         <groupId>com.google.code.gson</groupId>

@@ -74,12 +74,6 @@ public class SecurityAutoConfig extends WebSecurityConfigurerAdapter {
     return new TokenReceiver();
   }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public TokenParser tokenParser() {
-    return new TokenParser();
-  }
-
   @Autowired(required = false)
   public WebSecurityAppender webSecurityAppender;
 

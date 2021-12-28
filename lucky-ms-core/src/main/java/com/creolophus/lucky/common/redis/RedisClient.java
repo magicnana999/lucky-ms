@@ -48,12 +48,12 @@ public class RedisClient {
   }
 
   /** 加锁，锁的有效期取决于 expire。加锁失败立即返回 */
-  public boolean tryToLockIn(String key, long expire) {
+  public boolean lockIn(String key, long expire) {
     return valueOps.setIfAbsent(key, key, expire, TimeUnit.SECONDS);
   }
 
   /** 加锁，锁的有效期是永远有效（除非显示的删除）。加锁失败立即返回。 */
-  public boolean tryToLockAlways(String key) {
+  public boolean lock(String key) {
     return valueOps.setIfAbsent(key, key);
   }
 

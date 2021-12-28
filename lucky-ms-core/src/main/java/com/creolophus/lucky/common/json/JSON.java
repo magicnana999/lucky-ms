@@ -1,6 +1,12 @@
 package com.creolophus.lucky.common.json;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import org.springframework.util.DigestUtils;
 
 /**
  * @author magicnana
@@ -38,5 +44,30 @@ public class JSON {
 
   public static byte[] toJSONBytes(Object object) {
     return GsonUtil.toByteArray(object);
+  }
+
+
+  public static void main(String[] args){
+    List<Integer> list = Arrays.asList(100,200);
+    String json = toJSONString(list);
+    System.out.println(json);
+
+    Object obj = GsonUtil.toJava(json,new TypeToken<List<Integer>>(){}.getType());
+    System.out.println(obj);
+
+    Object obj2 = JacksonUtil.toJava(json,new TypeReference<List<Integer>>(){});
+    System.out.println(obj2);
+
+    Object obj3 = parseObject(json,new TypeReference<List<Integer>>(){}.getType());
+    System.out.println(obj3);
+
+    List<Long> list2 = Arrays.asList(3331341356795871232L);
+    System.out.println(toJSONString(list2));
+
+
+    String newPassword = DigestUtils.md5DigestAsHex(("953009" + "111111").getBytes());
+    System.out.println(newPassword);
+
+
   }
 }

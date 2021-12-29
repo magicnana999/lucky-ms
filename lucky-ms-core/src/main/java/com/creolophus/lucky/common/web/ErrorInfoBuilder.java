@@ -2,11 +2,7 @@ package com.creolophus.lucky.common.web;
 
 import com.creolophus.lucky.common.context.ApiContext;
 import com.creolophus.lucky.common.error.ApiError;
-import com.creolophus.lucky.common.exception.AccessDeniedException;
-import com.creolophus.lucky.common.exception.ApiException;
-import com.creolophus.lucky.common.exception.BrokenException;
-import com.creolophus.lucky.common.exception.ErrorCodeException;
-import com.creolophus.lucky.common.exception.HttpStatusException;
+import com.creolophus.lucky.common.exception.*;
 import com.creolophus.lucky.common.json.JSON;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
 import java.util.List;
@@ -173,6 +169,12 @@ public class ErrorInfoBuilder {
       ErrorCodeException ee = (ErrorCodeException) e;
       ee.setUri(request.getRequestURI());
       return e0(HttpStatus.BAD_REQUEST, ee.getApiError());
+    }
+    // 抛一个NotCententException，直接返回此ErrorCode
+    else if (e instanceof NoContentException) {
+      NoContentException ee = (NoContentException) e;
+      ee.setUri(request.getRequestURI());
+      return e0(HttpStatus.NO_CONTENT, ee.getApiError());
     }
 
     // Feign异常，不熔断，message是provider返回的ApiResult，直接返回provider的ApiResult

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,7 +54,7 @@ public class JacksonUtil {
     // Include.NON_NULL 属性为NULL 不序列化
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
-    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
@@ -65,6 +66,7 @@ public class JacksonUtil {
     SimpleModule simpleModule = new SimpleModule();
     simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
     simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+    simpleModule.addSerializer(BigDecimal.class, new BigDecimalSerializer());
 
     simpleModule.addDeserializer(
         String.class,

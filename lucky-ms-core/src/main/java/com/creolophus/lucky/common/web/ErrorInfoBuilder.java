@@ -191,9 +191,9 @@ public class ErrorInfoBuilder {
       }
     }
 
-    else if( e instanceof AuthenticationException){
-      return e0(HttpStatus.UNAUTHORIZED);
-    }
+//    else if( e instanceof AuthenticationException){
+//      return e0(HttpStatus.UNAUTHORIZED);
+//    }
 
     else if (e instanceof BindException){
       BindException be = (BindException)e;

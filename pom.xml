@@ -102,6 +102,12 @@
         <version>0.9.19</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>1.2.79</version>
+      </dependency>
+
       <!-- OKHTTPClient -->
       <dependency>
         <groupId>com.squareup.okhttp3</groupId>

@@ -70,6 +70,11 @@
       <artifactId>activation</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+    </dependency>
+
 
     <!-- OKHTTPClient -->
     <dependency>

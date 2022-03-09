@@ -1,6 +1,6 @@
 package com.creolophus.lucky.common.json;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -17,7 +17,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,13 +34,13 @@ public class JacksonUtil {
 
   private static ObjectMapper objectMapper;
 
-  public static ObjectMapper getObjectMapper(){
+  public static ObjectMapper getObjectMapper() {
     return objectMapper;
   }
 
-  public static ObjectMapper init(){
+  public static ObjectMapper init() {
 
-    if(objectMapper!=null){
+    if (objectMapper != null) {
       return objectMapper;
     }
 
@@ -52,9 +51,9 @@ public class JacksonUtil {
     // Include.NON_DEFAULT 属性为默认值不序列化
     // Include.NON_EMPTY 属性为 空（""） 或者为 NULL 都不序列化，则返回的json是没有这个字段的。这样对移动端会更省流量
     // Include.NON_NULL 属性为NULL 不序列化
-    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
-//    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    objectMapper.setSerializationInclusion(Include.NON_EMPTY);
+    objectMapper.setSerializationInclusion(Include.NON_NULL);
+    objectMapper.setSerializationInclusion(Include.NON_DEFAULT);
 
     objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
@@ -66,14 +65,12 @@ public class JacksonUtil {
     SimpleModule simpleModule = new SimpleModule();
     simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
     simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
-    simpleModule.addSerializer(BigDecimal.class, new BigDecimalSerializer());
 
     simpleModule.addDeserializer(
         String.class,
         new StdDeserializer<String>(String.class) {
           @Override
-          public String deserialize(JsonParser p, DeserializationContext ctxt)
-              throws IOException {
+          public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             String result = StringDeserializer.instance.deserialize(p, ctxt);
             if (StringUtils.isEmpty(result)) {
               return null;

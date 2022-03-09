@@ -1,8 +1,8 @@
 package com.creolophus.lucky.common.logger;
 
+import com.alibaba.fastjson.JSON;
 import com.creolophus.lucky.common.web.MdcUtil;
 import com.creolophus.lucky.common.context.ApiContext;
-import com.creolophus.lucky.common.json.JSON;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

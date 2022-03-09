@@ -1,20 +1,16 @@
 package com.creolophus.lucky.common.web;
 
-import com.creolophus.lucky.common.endpoint.BeanInfoEndpoint;
 import com.creolophus.lucky.common.json.GsonUtil;
 import com.creolophus.lucky.common.json.JacksonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -52,10 +48,10 @@ public class WebAutoConfig implements WebMvcConfigurer {
     return new ApiInterceptor();
   }
 
-//  @Override
-//  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-//    WebMvcConfigurer.super.configureMessageConverters(converters);
-//  }
+  //  @Override
+  //  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+  //    WebMvcConfigurer.super.configureMessageConverters(converters);
+  //  }
 
   @Bean
   @Primary
@@ -88,18 +84,14 @@ public class WebAutoConfig implements WebMvcConfigurer {
       logger.info("start -> addMessageConverters GSonHttpMessageConverter");
     }
 
-    return new HttpMessageConverters(gsonHttpMessageConverter,mappingJackson2HttpMessageConverter());
+    return new HttpMessageConverters(
+        gsonHttpMessageConverter, mappingJackson2HttpMessageConverter());
   }
 
   @Bean
   @ConditionalOnMissingBean
   public ApiHandler apiHandler() {
     return new ApiHandler();
-  }
-
-  @Bean
-  public BeanInfoEndpoint beanInfoEndpoint() {
-    return new BeanInfoEndpoint();
   }
 
   @Bean

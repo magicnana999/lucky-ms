@@ -1,6 +1,7 @@
 package com.creolophus.lucky.common.cloud;
 
 import com.creolophus.lucky.common.json.GsonUtil;
+import com.creolophus.lucky.common.json.JSON;
 import com.creolophus.lucky.common.json.JacksonUtil;
 import com.creolophus.lucky.common.web.ApiResult;
 import feign.Response;
@@ -27,10 +28,7 @@ public class CustomDecoder extends Decoder.Default implements Decoder {
 
     String jsonString = (String) super.decode(response, String.class);
 
-    // gson 会将{"code": 200, "data": 1} 序列化为{"code": 200, "data": 1.0}
-    //改用jackson
-//    ApiResult apiResult = JSON.parseObject(jsonString, ApiResult.class);
-    ApiResult apiResult = JacksonUtil.toJava(jsonString, ApiResult.class);
+    ApiResult apiResult = JSON.parseObject(jsonString, ApiResult.class);
 
     Object ret = apiResult.getData();
 

@@ -5,6 +5,7 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.ToNumberPolicy;
 import java.lang.reflect.Type;
 
 /**
@@ -20,6 +21,8 @@ public class GsonUtil {
   private static Gson gson =
       (new GsonBuilder())
           .setDateFormat("yyyy-MM-dd HH:mm:ss")
+          .setNumberToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
+          .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
           .setExclusionStrategies(
               new ExclusionStrategy() {
                 @Override

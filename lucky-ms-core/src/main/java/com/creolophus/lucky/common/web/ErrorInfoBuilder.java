@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
@@ -134,6 +135,10 @@ public class ErrorInfoBuilder {
 
     // 缺少参数
     else if (e instanceof MissingServletRequestParameterException) {
+      return e0(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    else if( e instanceof HttpMessageNotReadableException){
       return e0(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 

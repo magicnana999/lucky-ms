@@ -2,7 +2,12 @@ package com.creolophus.lucky.common.web;
 
 import com.creolophus.lucky.common.context.ApiContext;
 import com.creolophus.lucky.common.error.ApiError;
-import com.creolophus.lucky.common.exception.*;
+import com.creolophus.lucky.common.exception.AccessDeniedException;
+import com.creolophus.lucky.common.exception.ApiException;
+import com.creolophus.lucky.common.exception.BrokenException;
+import com.creolophus.lucky.common.exception.DirectlyMessageException;
+import com.creolophus.lucky.common.exception.ErrorCodeException;
+import com.creolophus.lucky.common.exception.HttpStatusException;
 import com.creolophus.lucky.common.json.JSON;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
 import java.util.List;
@@ -12,16 +17,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -42,9 +46,6 @@ public class ErrorInfoBuilder {
   private Logger logger = LoggerFactory.getLogger(getClass());
 
   private ErrorProperties errorProperties;
-
-  @Value("${spring.cloud.http-always-ok:false}")
-  private boolean httpAlwaysOK;
 
   public ErrorInfoBuilder(ServerProperties serverProperties) {
     this.errorProperties = serverProperties.getError();
@@ -118,10 +119,10 @@ public class ErrorInfoBuilder {
       e = getCloudError(request);
     }
 
-    //		if(e==null){
-    //			// TODO .. 无论何时，不能出现无法取得异常的情况
-    //			return e0(request,HttpStatus.BAD_REQUEST,ApiCode.E_ERROR.getMessage());
-    //		}
+    if(e==null){
+      // TODO .. 无论何时，不能出现无法取得异常的情况
+      return e0(HttpStatus.BAD_REQUEST,ApiError.ERROR);
+    }
 
     // 参数类型错误
     if (e instanceof MethodArgumentTypeMismatchException) {
@@ -136,9 +137,7 @@ public class ErrorInfoBuilder {
     // 缺少参数
     else if (e instanceof MissingServletRequestParameterException) {
       return e0(HttpStatus.BAD_REQUEST, e.getMessage());
-    }
-
-    else if( e instanceof HttpMessageNotReadableException){
+    } else if (e instanceof HttpMessageNotReadableException) {
       return e0(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
@@ -156,9 +155,9 @@ public class ErrorInfoBuilder {
     //      return e0(HttpStatus.BAD_REQUEST, e.getMessage());
     //    }
 
-    else if(e instanceof AccessDeniedException){
+    else if (e instanceof AccessDeniedException) {
       AccessDeniedException ee = (AccessDeniedException) e;
-      return e0(HttpStatus.FORBIDDEN,ee.getApiResult());
+      return e0(HttpStatus.FORBIDDEN, ee.getApiResult());
 
     }
 
@@ -167,19 +166,6 @@ public class ErrorInfoBuilder {
       HttpStatusException ee = (HttpStatusException) e;
       ee.setUri(request.getRequestURI());
       return e0(ee.getHttpStatus(), e.getMessage());
-    }
-
-    // 抛一个ErrorCodeException，直接返回此ErrorCode
-    else if (e instanceof ErrorCodeException) {
-      ErrorCodeException ee = (ErrorCodeException) e;
-      ee.setUri(request.getRequestURI());
-      return e0(HttpStatus.BAD_REQUEST, ee.getApiError());
-    }
-    // 抛一个ErrorCodeException，直接返回此ErrorCode
-    else if (e instanceof NoContentException) {
-      NoContentException ee = (NoContentException) e;
-      ee.setUri(request.getRequestURI());
-      return e0(HttpStatus.OK, ee.getApiError());
     }
 
     // Feign异常，不熔断，message是provider返回的ApiResult，直接返回provider的ApiResult
@@ -196,45 +182,53 @@ public class ErrorInfoBuilder {
       }
     }
 
-//    else if( e instanceof AuthenticationException){
-//      return e0(HttpStatus.UNAUTHORIZED);
-//    }
+    //    else if( e instanceof AuthenticationException){
+    //      return e0(HttpStatus.UNAUTHORIZED);
+    //    }
 
-    else if (e instanceof BindException){
-      BindException be = (BindException)e;
+    else if (e instanceof BindException) {
+      BindException be = (BindException) e;
       FieldError fe = be.getBindingResult().getFieldError();
       String msg = fe.getDefaultMessage();
-      return e0(HttpStatus.BAD_REQUEST,msg);
+      return e0(HttpStatus.BAD_REQUEST, msg);
     }
 
     // @Validated 表单方式参数验证提示
-    else if (e instanceof ConstraintViolationException){
-      ConstraintViolationException be = (ConstraintViolationException)e;
+    else if (e instanceof ConstraintViolationException) {
+      ConstraintViolationException be = (ConstraintViolationException) e;
       String localizedMessage = be.getLocalizedMessage();
       System.out.println("localizedMessage = " + localizedMessage);
-      List<String> defaultMsg = be.getConstraintViolations()
-              .stream()
+      List<String> defaultMsg =
+          be.getConstraintViolations().stream()
               .map(ConstraintViolation::getMessage)
               .collect(Collectors.toList());
-      return e0(HttpStatus.BAD_REQUEST,defaultMsg.get(0));
-    }
-
-    else if (e instanceof MethodArgumentNotValidException){
-      MethodArgumentNotValidException be = (MethodArgumentNotValidException)e;
+      return e0(HttpStatus.BAD_REQUEST, defaultMsg.get(0));
+    } else if (e instanceof MethodArgumentNotValidException) {
+      MethodArgumentNotValidException be = (MethodArgumentNotValidException) e;
       StringBuffer stringBuffer = new StringBuffer();
-      for(FieldError fe : be.getBindingResult().getFieldErrors()){
-        stringBuffer.append(fe.getField()+" "+fe.getDefaultMessage()+",");
+      for (FieldError fe : be.getBindingResult().getFieldErrors()) {
+        stringBuffer.append(fe.getField() + " " + fe.getDefaultMessage() + ",");
       }
-      stringBuffer.delete(stringBuffer.length()-1,stringBuffer.length());
-      return e0(HttpStatus.BAD_REQUEST,stringBuffer.toString());
+      stringBuffer.delete(stringBuffer.length() - 1, stringBuffer.length());
+      return e0(HttpStatus.BAD_REQUEST, stringBuffer.toString());
     }
 
-    // 在程序中抛出的ApiException，message直接给客户端返回，必须throw new ApiException("验证码不正确");
-    else if (e instanceof ApiException) {
-      ApiException ee = (ApiException) e;
+    // 抛一个ErrorCodeException，直接返回此ErrorCode
+    else if (e instanceof ErrorCodeException) {
+      ErrorCodeException ee = (ErrorCodeException) e;
       ee.setUri(request.getRequestURI());
-      return e0(HttpStatus.BAD_REQUEST, e.getMessage());
+      HttpStatus httpStatus = HttpStatus.resolve(ee.getHttpCode());
+      return e0(httpStatus==null?HttpStatus.BAD_REQUEST:httpStatus, ee.getApiError());
     }
+
+    // 抛一个ErrorCodeException，直接返回此ErrorCode
+    else if (e instanceof DirectlyMessageException) {
+      DirectlyMessageException ee = (DirectlyMessageException) e;
+      ee.setUri(request.getRequestURI());
+      HttpStatus httpStatus = HttpStatus.resolve(ee.getHttpCode());
+      return e0(httpStatus==null?HttpStatus.BAD_REQUEST:httpStatus, ee.getMessage());
+    }
+
 
     // 内部服务错误，熔断，返回给客户端500，"暂时无法提供服务"
     else if (e instanceof BrokenException) {
@@ -244,7 +238,7 @@ public class ErrorInfoBuilder {
 
     // 有SqlException之类的，不方便给客户端提供的走这里，返回"服务器内部错误"
     else if (e instanceof Throwable) {
-      return e0(HttpStatus.BAD_REQUEST, ApiError.ERROR);
+      return e0(HttpStatus.BAD_REQUEST,ApiError.ERROR);
     } else {
       int code = (int) request.getAttribute(WebUtils.ERROR_STATUS_CODE_ATTRIBUTE);
       HttpStatus httpStatus = HttpStatus.valueOf(code);
@@ -262,10 +256,6 @@ public class ErrorInfoBuilder {
     MdcUtil.clear();
     ApiContext.release();
 
-    if (httpAlwaysOK) {
-      return new ResponseEntity(apiResult, HttpStatus.OK);
-    } else {
-      return new ResponseEntity(apiResult, httpStatus);
-    }
+    return new ResponseEntity(apiResult, httpStatus);
   }
 }

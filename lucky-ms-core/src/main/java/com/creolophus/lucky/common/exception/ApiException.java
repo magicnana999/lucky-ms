@@ -1,14 +1,14 @@
 package com.creolophus.lucky.common.exception;
 
-public class ApiException extends CreolophusException {
+public abstract class ApiException extends CreolophusException {
 
   private String uri;
 
-  public ApiException(String message) {
+  protected ApiException(String message) {
     super(message);
   }
 
-  public ApiException(String message, Throwable cause) {
+  protected ApiException(String message, Throwable cause) {
     super(message, cause);
   }
 

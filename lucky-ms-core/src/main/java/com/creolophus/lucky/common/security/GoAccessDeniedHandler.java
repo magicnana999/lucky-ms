@@ -26,7 +26,7 @@ public class GoAccessDeniedHandler implements AccessDeniedHandler {
 
     logger.error("权限不够" + request.getRequestURI());
     CorsUtil.cors(request, response);
-    throw new HttpStatusException(HttpStatus.FORBIDDEN);
 
+    throw new AccessDeniedException(request.getRequestURI());
   }
 }

@@ -21,6 +21,7 @@ import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
@@ -158,7 +159,7 @@ public class ErrorInfoBuilder {
 
     else if(e instanceof AccessDeniedException){
       AccessDeniedException ee = (AccessDeniedException) e;
-      return e0(HttpStatus.FORBIDDEN,ee.getApiResult());
+      return e0(HttpStatus.FORBIDDEN);
 
     }
 

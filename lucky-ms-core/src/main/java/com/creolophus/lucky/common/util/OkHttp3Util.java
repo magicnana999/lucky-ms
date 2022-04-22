@@ -1,10 +1,20 @@
 package com.creolophus.lucky.common.util;
 
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
@@ -191,7 +201,7 @@ public class OkHttp3Util {
   }
 
   public static OkHttpClient getInstance() {
-    return SingletonHolder.INSTANCE;
+    return SingletonHolder.HTTP;
   }
 
   /**
@@ -328,15 +338,84 @@ public class OkHttp3Util {
     return endUrl.toString();
   }
 
+  private static class SSLSocketClient {
+
+    // 获取这个SSLSocketFactory
+    public static SSLSocketFactory getSSLSocketFactory() {
+      try {
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, getTrustManager(), new SecureRandom());
+        return sslContext.getSocketFactory();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    // 获取TrustManager
+    private static TrustManager[] getTrustManager() {
+      return new TrustManager[] {
+        new X509TrustManager() {
+          @Override
+          public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+
+          @Override
+          public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+
+          @Override
+          public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[] {};
+          }
+        }
+      };
+    }
+
+    // 获取HostnameVerifier
+    public static HostnameVerifier getHostnameVerifier() {
+      return (s, sslSession) -> true;
+    }
+
+    public static X509TrustManager getX509TrustManager() {
+      X509TrustManager trustManager = null;
+      try {
+        TrustManagerFactory trustManagerFactory =
+            TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init((KeyStore) null);
+        TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+        if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
+          throw new IllegalStateException(
+              "Unexpected default trust managers:" + Arrays.toString(trustManagers));
+        }
+        trustManager = (X509TrustManager) trustManagers[0];
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+
+      return trustManager;
+    }
+  }
+
   private static class SingletonHolder {
 
-    private static final OkHttpClient INSTANCE =
+    private static final OkHttpClient.Builder _builder =
         new OkHttpClient.Builder()
             .connectTimeout(2000, TimeUnit.MILLISECONDS)
             .readTimeout(5000, TimeUnit.MILLISECONDS)
             .writeTimeout(2000, TimeUnit.MILLISECONDS)
-            .connectionPool(new ConnectionPool())
+            .connectionPool(new ConnectionPool());
+
+    private static final OkHttpClient HTTP = _builder.build();
+
+    private static final OkHttpClient HTTPS =
+        _builder
+            .sslSocketFactory(
+                SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
+            .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
             .build();
+  }
+
+  public static void main(String[] args) {
+    Resp resp = OkHttp3Util.get("https://api.winggo.video/");
+    System.out.println(resp);
   }
 
   public static class Resp {

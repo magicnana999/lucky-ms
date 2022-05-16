@@ -1,4 +1,4 @@
-package com.creolophus.lucky.common.redis;
+package com.creolophus.lucky.common.lettuce;
 
 import com.creolophus.lucky.common.json.GsonUtil;
 import org.springframework.data.redis.serializer.RedisSerializer;

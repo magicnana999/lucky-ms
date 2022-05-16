@@ -1,4 +1,4 @@
-package com.creolophus.lucky.common.redis;
+package com.creolophus.lucky.common.lettuce;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

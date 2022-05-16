@@ -1,7 +1,6 @@
 package com.creolophus.lucky.common.rocketmq;
 
-import com.liuyi.common.exception.ApiException;
-import com.liuyi.common.exception.BrokenException;
+import com.creolophus.lucky.common.exception.BrokenException;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +38,7 @@ public class RocketMQProducer {
       producer.start();
       logger.info("start RocketMQ Producer");
     } catch (Exception e) {
-      throw new BrokenException(e);
+      throw new BrokenException("start RocketMQ error",e);
     }
   }
 
@@ -77,11 +76,11 @@ public class RocketMQProducer {
           sendResult == null ? "" : sendResult.getMsgId(), new String(msg.getBody()));
 
       if (sendResult == null) {
-        throw new ApiException("Send message to RocketMQ failed, return null");
+        throw new RuntimeException("Send message to RocketMQ failed, return null");
       }
 
       if (!sendResult.getSendStatus().equals(SendStatus.SEND_OK)) {
-        throw new ApiException(
+        throw new RuntimeException(
             "Send message to RocketMQ failed, " + sendResult.getSendStatus().name());
       }
 

@@ -78,6 +78,12 @@
 
 
       <dependency>
+        <groupId>com.xuxueli</groupId>
+        <artifactId>xxl-job-core</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.ibeetl</groupId>
         <artifactId>sql-springboot-starter</artifactId>
         <version>3.12.11-RELEASE</version>

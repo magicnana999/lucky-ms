@@ -6,8 +6,11 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.springframework.core.annotation.AliasFor;
 
 /**
+ * 日志脱敏
+ *
  * @author magicnana
  * @date 2022/3/10 14:17
  */
@@ -17,24 +20,12 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Desensitized {
 
-  Sensitive type();
-
+  Sensitive type() default Sensitive.STAR;
 
   enum Sensitive {
-    BETWEEN1,
-    BETWEEN2,
-    BETWEEN3,
-    BETWEEN4,
-    AFTER1,
-    AFTER2,
-    AFTER3,
-    AFTER4,
-    BEFORE1,
-    BEFORE2,
-    BEFORE3,
-    BEFORE4,
-    ALL,
-    SHORTEN,
+    STAR,   //替换为******
+    HIDE,   //替换为""
+    SHORTEN,//替换为xxx...
     ;
   }
 }

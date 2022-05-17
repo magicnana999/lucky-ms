@@ -74,11 +74,9 @@ public @interface Api {
         }
       };
 
-  @AliasFor("value")
   String scope() default SCOPE_PUBLIC;
 
   String encrypt() default ENCRYPT_NONE;
 
-  @AliasFor("scope")
   String value() default SCOPE_PUBLIC;
 }

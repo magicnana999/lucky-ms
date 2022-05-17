@@ -52,7 +52,7 @@ public class JacksonUtil {
     // Include.NON_EMPTY 属性为 空（""） 或者为 NULL 都不序列化，则返回的json是没有这个字段的。这样对移动端会更省流量
     // Include.NON_NULL 属性为NULL 不序列化
 //    objectMapper.setSerializationInclusion(Include.NON_EMPTY);
-    objectMapper.setSerializationInclusion(Include.NON_NULL);
+//    objectMapper.setSerializationInclusion(Include.NON_NULL);
 //    objectMapper.setSerializationInclusion(Include.NON_DEFAULT);
 
     objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));

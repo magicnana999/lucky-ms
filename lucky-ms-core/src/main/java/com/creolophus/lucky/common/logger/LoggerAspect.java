@@ -1,6 +1,7 @@
 package com.creolophus.lucky.common.logger;
 
 import com.alibaba.fastjson.JSON;
+import com.creolophus.lucky.common.json.FastJsonDesensitizeFilter;
 import com.creolophus.lucky.common.web.MdcUtil;
 import com.creolophus.lucky.common.context.ApiContext;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class LoggerAspect {
 
   private static final ConcurrentHashMap<Class, Logger> loggerTable = new ConcurrentHashMap<>();
   private Logger logger = LoggerFactory.getLogger(LoggerAspect.class);
+
+  private static FastJsonDesensitizeFilter filter = new FastJsonDesensitizeFilter();
 
   @AfterReturning(pointcut = "inService()", returning = "result")
   public void doAfter(JoinPoint joinPoint, Object result) {
@@ -104,7 +107,7 @@ public class LoggerAspect {
     }
 
     try {
-      return JSON.toJSONString(list);
+      return JSON.toJSONString(list,filter);
     } catch (Throwable e) {
       return "could not parse to string";
     }
@@ -133,7 +136,7 @@ public class LoggerAspect {
 
   private String toJSONString(Object object) {
     if (isCanBeToString(object)) {
-      return JSON.toJSONString(object);
+      return JSON.toJSONString(object,filter);
     } else {
       return object.toString();
     }

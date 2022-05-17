@@ -3,12 +3,11 @@ package com.creolophus.lucky.common.web;
 import com.creolophus.lucky.common.context.ApiContext;
 import com.creolophus.lucky.common.error.ApiError;
 import com.creolophus.lucky.common.exception.AccessDeniedException;
-import com.creolophus.lucky.common.exception.ApiException;
 import com.creolophus.lucky.common.exception.BrokenException;
 import com.creolophus.lucky.common.exception.DirectlyMessageException;
 import com.creolophus.lucky.common.exception.ErrorCodeException;
 import com.creolophus.lucky.common.exception.HttpStatusException;
-import com.creolophus.lucky.common.json.JSON;
+import com.creolophus.lucky.common.json.JacksonUtil;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
@@ -69,7 +67,7 @@ public class ErrorInfoBuilder {
         "error [{}:{}] {}",
         httpStatus.value(),
         httpStatus.getReasonPhrase(),
-        (JSON.toJSONString(apiError)));
+        (JacksonUtil.toJson(apiError)));
     ApiResult apiResult = new ApiResult(apiError.getCode(), apiError.getMessage());
     return getResponseEntity(apiResult, httpStatus);
   }
@@ -171,7 +169,7 @@ public class ErrorInfoBuilder {
     // Feign异常，不熔断，message是provider返回的ApiResult，直接返回provider的ApiResult
     else if (e instanceof HystrixBadRequestException) {
       try {
-        ApiResult apiResult = JSON.parseObject(e.getMessage(), ApiResult.class);
+        ApiResult apiResult = JacksonUtil.toJava(e.getMessage(), ApiResult.class);
         if (apiResult == null) {
           return e0(HttpStatus.BAD_REQUEST, e.getMessage());
         } else {

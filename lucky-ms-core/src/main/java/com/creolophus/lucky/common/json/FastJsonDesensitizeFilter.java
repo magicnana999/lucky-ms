@@ -3,12 +3,13 @@ package com.creolophus.lucky.common.json;
 import com.alibaba.fastjson.serializer.ValueFilter;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author magicnana
  * @date 2022/3/10 14:15
  */
-public class DesensitizeFilter implements ValueFilter {
+public class FastJsonDesensitizeFilter implements ValueFilter {
 
   public static final ConcurrentHashMap<String, Field> map = new ConcurrentHashMap();
 
@@ -35,9 +36,20 @@ public class DesensitizeFilter implements ValueFilter {
         return value;
       }
 
+      String ret = value.toString();
+
       switch (desensitization.type()) {
         case SHORTEN:
-          return "JINSONG WISHES";
+
+          if(StringUtils.length(ret)>6){
+            return StringUtils.substring(ret,0,3)+"...";
+          }else{
+            return ret;
+          }
+        case HIDE:
+          return "";
+        case STAR:
+          return "******";
         default:
           return value;
       }

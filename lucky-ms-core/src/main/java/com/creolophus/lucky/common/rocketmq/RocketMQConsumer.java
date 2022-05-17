@@ -1,8 +1,8 @@
 package com.creolophus.lucky.common.rocketmq;
 
-import com.liuyi.common.config.RocketMQSetting;
-import com.liuyi.common.exception.DoNotReConsumeException;
-import com.liuyi.common.logger.Entry;
+import com.creolophus.lucky.common.exception.DoNotReConsumeException;
+import com.creolophus.lucky.common.logger.Entry;
+import com.creolophus.lucky.common.thread.Stopable;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * @author magicnana
  * @date 2019/7/23 下午5:54
  */
-public abstract class RocketMQConsumer implements Shutdown {
+public abstract class RocketMQConsumer implements Stopable {
 
   private static final Logger logger = LoggerFactory.getLogger(RocketMQProducer.class);
   private final DefaultMQPushConsumer consumer = new DefaultMQPushConsumer();

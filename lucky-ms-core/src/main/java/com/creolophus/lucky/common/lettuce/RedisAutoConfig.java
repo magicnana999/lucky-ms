@@ -1,5 +1,6 @@
 package com.creolophus.lucky.common.lettuce;
 
+import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -71,8 +72,8 @@ public class RedisAutoConfig {
     StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
     template.setKeySerializer(stringRedisSerializer);
     template.setHashKeySerializer(stringRedisSerializer);
-    template.setValueSerializer(new GsonRedisSerializer());
-    template.setHashValueSerializer(new GsonRedisSerializer());
+    template.setValueSerializer(new GenericFastJsonRedisSerializer());
+    template.setHashValueSerializer(new GenericFastJsonRedisSerializer());
     template.afterPropertiesSet();
 
     if (logger.isInfoEnabled()) {
@@ -89,5 +90,11 @@ public class RedisAutoConfig {
       logger.info("start -> RedisClient");
     }
     return rc;
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public GenericFastJsonRedisSerializer genericFastJsonRedisSerializer(){
+    return new GenericFastJsonRedisSerializer();
   }
 }

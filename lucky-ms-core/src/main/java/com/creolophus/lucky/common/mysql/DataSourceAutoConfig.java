@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @Configuration
+@ConditionalOnClass({DataSource.class})
 public class DataSourceAutoConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(DataSourceAutoConfig.class);

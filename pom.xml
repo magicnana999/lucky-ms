@@ -183,13 +183,6 @@
         <version>4.5.0</version>
       </dependency>
 
-      <!-- MongoBson -->
-      <dependency>
-        <groupId>org.mongodb</groupId>
-        <artifactId>bson</artifactId>
-        <version>3.6.4</version>
-      </dependency>
-
 
       <!-- commons -->
       <dependency>

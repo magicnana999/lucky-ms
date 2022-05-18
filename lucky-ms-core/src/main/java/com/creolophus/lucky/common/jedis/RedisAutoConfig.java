@@ -30,13 +30,13 @@ public class RedisAutoConfig {
   @Value("${spring.redis.timeout}")
   private int timeout;
 
-  @Value("${spring.redis.jedis.pool.max-active}")
+  @Value("${spring.redis.pool.max-active}")
   private int maxActive;
 
-  @Value("${spring.redis.jedis.pool.max-idle}")
+  @Value("${spring.redis.pool.max-idle}")
   private int maxIdle;
 
-  @Value("${spring.redis.jedis.pool.min-idle}")
+  @Value("${spring.redis.pool.min-idle}")
   private int minIdle;
 
   @Bean

@@ -14,6 +14,10 @@ import org.springframework.lang.Nullable;
  */
 public class LiuyiMappingJackson2HttpMessageConverter extends MappingJackson2HttpMessageConverter {
 
+  public LiuyiMappingJackson2HttpMessageConverter(ObjectMapper jacksonObjectMapper) {
+    super(jacksonObjectMapper);
+  }
+
   @Override
   public boolean canRead(
       Type type, @Nullable Class<?> contextClass, @Nullable MediaType mediaType) {

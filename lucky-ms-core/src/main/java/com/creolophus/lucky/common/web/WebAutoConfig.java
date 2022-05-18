@@ -56,7 +56,7 @@ public class WebAutoConfig implements WebMvcConfigurer {
   @Bean
   @Primary
   public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
-    return new MappingJackson2HttpMessageConverter(jacksonObjectMapper());
+    return new LiuyiMappingJackson2HttpMessageConverter(jacksonObjectMapper());
   }
 
   @Bean

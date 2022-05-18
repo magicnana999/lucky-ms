@@ -69,4 +69,10 @@ public class ApiHandler {
       HandlePostSecurity(api,response);
     }
   }
+
+  protected void authenticate(HttpServletRequest request, Object handler) {
+  }
+
+  protected void completion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+  }
 }

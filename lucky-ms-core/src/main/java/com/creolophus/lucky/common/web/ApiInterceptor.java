@@ -19,6 +19,7 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
   private Api defaultApi;
 
   protected void authenticate(HttpServletRequest request, Object handler) {
+    apiHandler.authenticate(request,handler);
     if (handler instanceof HandlerMethod) {
       HandlerMethod hm = (HandlerMethod) handler;
       Api api = hm.getMethodAnnotation(Api.class);
@@ -40,6 +41,7 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
       ApiContext.getContext().setApi(api);
       apiHandler.postHandle(api, request,response,ex);
     }
+    apiHandler.completion(request,response,handler,ex);
   }
 
   public String getPathPatterns() {

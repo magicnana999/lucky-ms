@@ -12,12 +12,11 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 public class ApiInterceptor extends HandlerInterceptorAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(ApiInterceptor.class);
-  @Resource private ApiHandler apiHandler;
+  @Resource
+  private ApiHandler apiHandler;
 
   @Resource(name = "defaultApi")
   private Api defaultApi;
-
-  protected void afterCompletion(HttpServletRequest request) {}
 
   protected void authenticate(HttpServletRequest request, Object handler) {
     if (handler instanceof HandlerMethod) {
@@ -27,7 +26,19 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
         api = defaultApi;
       }
       ApiContext.getContext().setApi(api);
-      apiHandler.handle(api, request);
+      apiHandler.preHandle(api, request);
+    }
+  }
+
+  protected void completion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex){
+    if (handler instanceof HandlerMethod) {
+      HandlerMethod hm = (HandlerMethod) handler;
+      Api api = hm.getMethodAnnotation(Api.class);
+      if (api == null) {
+        api = defaultApi;
+      }
+      ApiContext.getContext().setApi(api);
+      apiHandler.postHandle(api, request,response,ex);
     }
   }
 
@@ -50,6 +61,6 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
   @Override
   public void afterCompletion(
       HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-    afterCompletion(request);
+    completion(request,response,handler,ex);
   }
 }

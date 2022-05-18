@@ -23,13 +23,12 @@ public @interface Api {
   String ENCRYPT_BASE64 = "BASE64";
   String ENCRYPT_BASE64_ = "BASE64+";
   String ENCRYPT_RSA = "RSA";
-  String ENCRYPT_NONE = "NONE";
 
   String INTERNAL_HEADER_KEY = "X-LiuYi-Inter";
   String INTERNAL_HEADER_VAL = "BMW525LIBENZGLE4504MATICPANAMERA";
 
   Api INTERNAL_API =
-      new Api(){
+      new Api() {
         @Override
         public Class<? extends Annotation> annotationType() {
           return Api.class;
@@ -42,7 +41,12 @@ public @interface Api {
 
         @Override
         public String encrypt() {
-          return ENCRYPT_NONE;
+          return "";
+        }
+
+        @Override
+        public String decrypt() {
+          return "";
         }
 
         @Override
@@ -65,7 +69,12 @@ public @interface Api {
 
         @Override
         public String encrypt() {
-          return ENCRYPT_NONE;
+          return "";
+        }
+
+        @Override
+        public String decrypt() {
+          return "";
         }
 
         @Override
@@ -76,7 +85,10 @@ public @interface Api {
 
   String scope() default SCOPE_PUBLIC;
 
-  String encrypt() default ENCRYPT_NONE;
+  String encrypt() default "";
+
+  String decrypt() default "";
 
   String value() default SCOPE_PUBLIC;
+
 }

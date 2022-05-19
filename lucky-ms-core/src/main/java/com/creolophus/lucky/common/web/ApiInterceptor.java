@@ -18,7 +18,7 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
   @Resource(name = "defaultApi")
   private Api defaultApi;
 
-  protected void authenticate(HttpServletRequest request, Object handler) {
+  protected void authenticate(HttpServletRequest request,HttpServletResponse response, Object handler) {
     if (handler instanceof HandlerMethod) {
       HandlerMethod hm = (HandlerMethod) handler;
       Api api = hm.getMethodAnnotation(Api.class);
@@ -26,8 +26,8 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
         api = defaultApi;
       }
       ApiContext.getContext().setApi(api);
-      apiHandler.authenticate(api,request);
-      apiHandler.preHandle(api, request);
+      apiHandler.authenticate(api,request,response);
+      apiHandler.preHandle(api, request,response);
     }
   }
 
@@ -56,7 +56,7 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
     preHandle(request);
-    authenticate(request, handler);
+    authenticate(request, response,handler);
     return true;
   }
 

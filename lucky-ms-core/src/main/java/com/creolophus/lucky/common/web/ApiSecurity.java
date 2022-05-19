@@ -15,10 +15,10 @@ public interface ApiSecurity {
 
   String decrypt();
 
-  public void authenticate(HttpServletRequest request);
+  public void authenticate(HttpServletRequest request, HttpServletResponse response);
 
-  public void encrypt(HttpServletRequest request);
+  public void encrypt(HttpServletRequest request, HttpServletResponse response);
 
-  public void decrypt(HttpServletResponse response);
+  public void decrypt(HttpServletRequest request, HttpServletResponse response);
 
 }

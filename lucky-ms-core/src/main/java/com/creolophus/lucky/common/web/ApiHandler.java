@@ -23,27 +23,27 @@ public class ApiHandler {
   @Resource
   private List<ApiSecurity> apiSecurityList = new ArrayList();
 
-  public void preHandle(Api api, HttpServletRequest request) {
+  public void preHandle(Api api, HttpServletRequest request,HttpServletResponse response) {
     handleScope(api, request);
-    HandlePreSecurity(api, request);
+    HandlePreSecurity(api, request,response);
   }
 
-  protected void HandlePreSecurity(Api api, HttpServletRequest request) {
+  protected void HandlePreSecurity(Api api, HttpServletRequest request,HttpServletResponse response) {
     if (StringUtils.isNoneBlank(api.encrypt())) {
       for (ApiSecurity apiSecurity : apiSecurityList) {
         if (apiSecurity.encrypt().equals(api.encrypt())) {
-          apiSecurity.encrypt(request);
+          apiSecurity.encrypt(request,response);
           return;
         }
       }
     }
   }
 
-  protected void HandlePostSecurity(Api api, HttpServletResponse response) {
+  protected void HandlePostSecurity(Api api, HttpServletRequest request,HttpServletResponse response) {
     if (StringUtils.isNoneBlank(api.decrypt())) {
       for (ApiSecurity apiSecurity : apiSecurityList) {
         if (apiSecurity.decrypt().equals(api.decrypt())) {
-          apiSecurity.decrypt(response);
+          apiSecurity.decrypt(request,response);
           return;
         }
       }
@@ -66,15 +66,15 @@ public class ApiHandler {
 
   public void postHandle(Api api, HttpServletRequest request, HttpServletResponse response, Exception ex) {
     if(ex!=null){
-      HandlePostSecurity(api,response);
+      HandlePostSecurity(api,request,response);
     }
   }
 
-  protected void authenticate(Api api,HttpServletRequest request) {
+  protected void authenticate(Api api,HttpServletRequest request,HttpServletResponse response) {
     if (StringUtils.isNoneBlank(api.auth())) {
       for (ApiSecurity apiSecurity : apiSecurityList) {
         if (apiSecurity.auth().equals(api.auth())) {
-          apiSecurity.authenticate(request);
+          apiSecurity.authenticate(request,response);
           return;
         }
       }

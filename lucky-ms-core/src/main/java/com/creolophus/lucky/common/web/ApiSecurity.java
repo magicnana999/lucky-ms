@@ -9,9 +9,13 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface ApiSecurity {
 
+  String auth();
+
   String encrypt();
 
   String decrypt();
+
+  public void authenticate(HttpServletRequest request);
 
   public void encrypt(HttpServletRequest request);
 

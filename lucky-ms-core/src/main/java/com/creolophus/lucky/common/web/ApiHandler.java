@@ -70,7 +70,15 @@ public class ApiHandler {
     }
   }
 
-  protected void authenticate(HttpServletRequest request, Object handler) {
+  protected void authenticate(Api api,HttpServletRequest request) {
+    if (StringUtils.isNoneBlank(api.auth())) {
+      for (ApiSecurity apiSecurity : apiSecurityList) {
+        if (apiSecurity.auth().equals(api.auth())) {
+          apiSecurity.authenticate(request);
+          return;
+        }
+      }
+    }
   }
 
   protected void completion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {

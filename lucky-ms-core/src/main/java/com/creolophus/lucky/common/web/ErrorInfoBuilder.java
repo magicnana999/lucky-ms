@@ -7,6 +7,7 @@ import com.creolophus.lucky.common.exception.BrokenException;
 import com.creolophus.lucky.common.exception.DirectlyMessageException;
 import com.creolophus.lucky.common.exception.ErrorCodeException;
 import com.creolophus.lucky.common.exception.HttpStatusException;
+import com.creolophus.lucky.common.json.GsonUtil;
 import com.creolophus.lucky.common.json.JacksonUtil;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
 import java.util.List;
@@ -38,7 +39,6 @@ import org.springframework.web.util.WebUtils;
  * @author magicnana
  * @date 2018/5/25.
  */
-@Component
 public class ErrorInfoBuilder {
 
   private Logger logger = LoggerFactory.getLogger(getClass());
@@ -49,16 +49,20 @@ public class ErrorInfoBuilder {
     this.errorProperties = serverProperties.getError();
   }
 
+  protected Object apiResult(int code, String message){
+    return new ApiResult(code, message);
+  }
+
   public ResponseEntity e0(HttpStatus httpStatus) {
     String message = httpStatus.getReasonPhrase();
     logger.error("error [{}:{}] {}", httpStatus.value(), httpStatus.getReasonPhrase(), message);
-    ApiResult apiResult = new ApiResult(httpStatus.value(), message);
+    Object apiResult = apiResult(httpStatus.value(), message);
     return getResponseEntity(apiResult, httpStatus);
   }
 
   public ResponseEntity e0(HttpStatus httpStatus, String message) {
     logger.error("error [{}:{}] {}", httpStatus.value(), httpStatus.getReasonPhrase(), message);
-    ApiResult apiResult = new ApiResult(httpStatus.value(), message);
+    Object apiResult = apiResult(httpStatus.value(), message);
     return getResponseEntity(apiResult, httpStatus);
   }
 
@@ -68,7 +72,7 @@ public class ErrorInfoBuilder {
         httpStatus.value(),
         httpStatus.getReasonPhrase(),
         (JacksonUtil.toJson(apiError)));
-    ApiResult apiResult = new ApiResult(apiError.getCode(), apiError.getMessage());
+    Object apiResult = apiResult(apiError.getCode(), apiError.getMessage());
     return getResponseEntity(apiResult, httpStatus);
   }
 
@@ -169,7 +173,7 @@ public class ErrorInfoBuilder {
     // Feign异常，不熔断，message是provider返回的ApiResult，直接返回provider的ApiResult
     else if (e instanceof HystrixBadRequestException) {
       try {
-        ApiResult apiResult = JacksonUtil.toJava(e.getMessage(), ApiResult.class);
+        ApiResult apiResult = GsonUtil.toJava(e.getMessage(), ApiResult.class);
         if (apiResult == null) {
           return e0(HttpStatus.BAD_REQUEST, e.getMessage());
         } else {
@@ -249,7 +253,7 @@ public class ErrorInfoBuilder {
     return this.errorProperties.getPath();
   }
 
-  private ResponseEntity getResponseEntity(ApiResult apiResult, HttpStatus httpStatus) {
+  private ResponseEntity getResponseEntity(Object apiResult, HttpStatus httpStatus) {
 
     MdcUtil.clear();
     ApiContext.release();

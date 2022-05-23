@@ -7,7 +7,7 @@ import java.util.Collections;
  * @author magicnana
  * @date 2019/5/15 下午2:16
  */
-public final class ApiResult<T> implements java.io.Serializable {
+public class ApiResult<T> implements java.io.Serializable {
 
   private static final long serialVersionUID = -3292747658038585878L;
 
@@ -65,4 +65,5 @@ public final class ApiResult<T> implements java.io.Serializable {
         + (data == null ? "" : data.toString())
         + '}';
   }
+
 }

@@ -24,7 +24,8 @@ public class GlobalErrorController implements ErrorController {
 
   private static Logger logger = LoggerFactory.getLogger(GlobalErrorController.class);
 
-  @Resource private ErrorInfoBuilder errorInfoBuilder;
+  @Resource
+  private ErrorInfoBuilder errorInfoBuilder;
 
   @RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
   @ResponseBody

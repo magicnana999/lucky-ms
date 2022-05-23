@@ -4,8 +4,10 @@ import com.creolophus.lucky.common.context.ApiContext;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.beetl.sql.annotation.entity.Auto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -15,10 +17,11 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
   @Resource
   private ApiHandler apiHandler;
 
-  @Resource(name = "defaultApi")
+  @Resource
   private Api defaultApi;
 
-  protected void authenticate(HttpServletRequest request,HttpServletResponse response, Object handler) {
+  protected void authenticate(HttpServletRequest request, HttpServletResponse response,
+      Object handler) {
     if (handler instanceof HandlerMethod) {
       HandlerMethod hm = (HandlerMethod) handler;
       Api api = hm.getMethodAnnotation(Api.class);
@@ -26,12 +29,13 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
         api = defaultApi;
       }
       ApiContext.getContext().setApi(api);
-      apiHandler.authenticate(api,request,response);
-      apiHandler.preHandle(api, request,response);
+      apiHandler.authenticate(api, request, response);
+      apiHandler.preHandle(api, request, response);
     }
   }
 
-  protected void completion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex){
+  protected void completion(HttpServletRequest request, HttpServletResponse response,
+      Object handler, Exception ex) {
     if (handler instanceof HandlerMethod) {
       HandlerMethod hm = (HandlerMethod) handler;
       Api api = hm.getMethodAnnotation(Api.class);
@@ -39,9 +43,9 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
         api = defaultApi;
       }
       ApiContext.getContext().setApi(api);
-      apiHandler.postHandle(api, request,response,ex);
+      apiHandler.postHandle(api, request, response, ex);
     }
-    apiHandler.completion(request,response,handler,ex);
+    apiHandler.completion(request, response, handler, ex);
   }
 
   public String getPathPatterns() {
@@ -56,13 +60,13 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
     preHandle(request);
-    authenticate(request, response,handler);
+    authenticate(request, response, handler);
     return true;
   }
 
   @Override
   public void afterCompletion(
       HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-    completion(request,response,handler,ex);
+    completion(request, response, handler, ex);
   }
 }

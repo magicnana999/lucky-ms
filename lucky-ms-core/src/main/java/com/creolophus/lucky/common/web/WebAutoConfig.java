@@ -49,11 +49,6 @@ public class WebAutoConfig implements WebMvcConfigurer {
     return new ApiInterceptor();
   }
 
-  //  @Override
-  //  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-  //    WebMvcConfigurer.super.configureMessageConverters(converters);
-  //  }
-
   @Bean
   @Primary
   public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {

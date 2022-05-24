@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Scope;
  * @author magicnana
  * @date 2019/3/1 上午12:36
  */
-//@Configuration
+@Configuration
 public class CloudAutoConfig {
 
   private static org.slf4j.Logger logger = LoggerFactory.getLogger(CloudAutoConfig.class);

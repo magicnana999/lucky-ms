@@ -21,9 +21,14 @@ public class CustomDecoder extends Decoder.Default implements Decoder {
 
   private static final Logger logger = LoggerFactory.getLogger(CustomDecoder.class);
 
-  protected Map apiResult(String response) throws IOException {
+  protected Map apiResult(String response) {
     Map apiResult = GsonUtil.toJava(response, ApiResult.class);
     return apiResult;
+  }
+
+  protected Object apiData(Object obj,Type type){
+    Object o = GsonUtil.toJava(obj, type);
+    return o;
   }
 
   /**
@@ -59,8 +64,7 @@ public class CustomDecoder extends Decoder.Default implements Decoder {
     } else if (Map.class.equals(type)) {
       return ret;
     } else {
-      Object obj = GsonUtil.toJava(ret, type);
-      return obj;
+      return apiData(ret,type);
     }
   }
 

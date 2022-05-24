@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
+import java.util.List;
 import org.junit.Test;
 
 /**
@@ -11,6 +12,13 @@ import org.junit.Test;
  * @date 2022/5/17 19:57
  */
 public class JsonTest {
+
+  @Test
+  public void foo(){
+    String s = "[10000,10010]";
+    List list = JacksonUtil.toJava(s,List.class);
+    System.out.println(JacksonUtil.toJava(s, List.class));
+  }
 
 
   /**

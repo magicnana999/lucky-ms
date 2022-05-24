@@ -17,14 +17,13 @@ import org.springframework.context.annotation.Scope;
  * @author magicnana
  * @date 2019/3/1 上午12:36
  */
-@Configuration
-@ConditionalOnClass(Feign.class)
+//@Configuration
 public class CloudAutoConfig {
 
   private static org.slf4j.Logger logger = LoggerFactory.getLogger(CloudAutoConfig.class);
 
   @Bean
-  @Scope("prototype")
+  @ConditionalOnClass(Feign.class)
   @ConditionalOnMissingBean
   public Decoder decoder() {
     if (logger.isInfoEnabled()) {
@@ -34,7 +33,7 @@ public class CloudAutoConfig {
   }
 
   @Bean
-  @Scope("prototype")
+  @ConditionalOnClass(Feign.class)
   @ConditionalOnMissingBean
   public ErrorDecoder errorDecoder() {
     if (logger.isInfoEnabled()) {
@@ -44,14 +43,14 @@ public class CloudAutoConfig {
   }
 
   @Bean
-  @Scope("prototype")
+  @ConditionalOnClass(Feign.class)
   @ConditionalOnMissingBean
   public Logger.Level feignLoggerLevel() {
     return Logger.Level.NONE;
   }
 
   @Bean
-  @Scope("prototype")
+  @ConditionalOnClass(Feign.class)
   @ConditionalOnMissingBean
   public RequestInterceptor requestInterceptor() {
     return template -> template.header(Api.INTERNAL_HEADER_KEY, Api.INTERNAL_HEADER_VAL);

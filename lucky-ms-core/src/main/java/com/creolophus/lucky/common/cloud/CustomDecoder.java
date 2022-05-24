@@ -4,6 +4,7 @@ import com.creolophus.lucky.common.json.GsonUtil;
 import com.creolophus.lucky.common.web.ApiResult;
 import feign.Response;
 import feign.codec.Decoder;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,15 +21,22 @@ public class CustomDecoder extends Decoder.Default implements Decoder {
 
   private static final Logger logger = LoggerFactory.getLogger(CustomDecoder.class);
 
-  /** 不支持 char，byte[]，Class，ParameterizedType，GenericArrayType，TypeVariable */
+  protected Map apiResult(String response) throws IOException {
+    Map apiResult = GsonUtil.toJava(response, ApiResult.class);
+    return apiResult;
+  }
+
+  /**
+   * 不支持 char，byte[]，Class，ParameterizedType，GenericArrayType，TypeVariable
+   */
   @Override
   public Object decode(Response response, Type type) throws IOException {
 
     String jsonString = (String) super.decode(response, String.class);
 
-    ApiResult apiResult = GsonUtil.toJava(jsonString, ApiResult.class);
+    Map apiResult = apiResult(jsonString);
 
-    Object ret = apiResult.getData();
+    Object ret = apiResult.get("data");
 
     if (String.class.equals(type)) {
       return ret;
@@ -55,4 +63,5 @@ public class CustomDecoder extends Decoder.Default implements Decoder {
       return obj;
     }
   }
+
 }

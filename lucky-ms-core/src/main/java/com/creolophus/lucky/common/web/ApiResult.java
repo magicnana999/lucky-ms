@@ -2,12 +2,13 @@ package com.creolophus.lucky.common.web;
 
 import com.creolophus.lucky.common.error.ApiError;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 /**
  * @author magicnana
  * @date 2019/5/15 下午2:16
  */
-public class ApiResult<T> implements java.io.Serializable {
+public class ApiResult<T> implements Supplier,java.io.Serializable {
 
   private static final long serialVersionUID = -3292747658038585878L;
 
@@ -66,4 +67,8 @@ public class ApiResult<T> implements java.io.Serializable {
         + '}';
   }
 
+  @Override
+  public Object get() {
+    return data;
+  }
 }

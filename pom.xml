@@ -12,6 +12,7 @@
   <modules>
     <module>lucky-ms-core</module>
     <module>lucky-ms-alibaba</module>
+    <module>lucky-ms-demo</module>
   </modules>
 
 

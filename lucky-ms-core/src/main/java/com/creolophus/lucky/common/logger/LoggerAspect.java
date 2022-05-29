@@ -115,14 +115,14 @@ public class LoggerAspect {
 
   private void printAfter(JoinPoint joinPoint, Object result) {
     if (logger.isDebugEnabled()) {
-      getLogger(joinPoint).debug(resultToString(result));
+      getLogger(joinPoint).info(resultToString(result));
     }
   }
 
   private void printBefore(JoinPoint joinPoint) {
     if (logger.isDebugEnabled()) {
       String parameters = parameterToString(joinPoint);
-      getLogger(joinPoint).debug(parameters);
+      getLogger(joinPoint).info(parameters);
     }
   }
 

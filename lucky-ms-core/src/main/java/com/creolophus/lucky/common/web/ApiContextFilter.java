@@ -1,6 +1,7 @@
 package com.creolophus.lucky.common.web;
 
 import com.creolophus.lucky.common.context.ApiContext;
+import com.creolophus.lucky.common.json.GsonUtil;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -34,9 +35,10 @@ public class ApiContextFilter extends OncePerRequestFilter {
     }
 
     MdcUtil.init(request.getRequestURI(), null);
+    logger.info("{}", GsonUtil.toJson(request.getParameterMap()));
     chain.doFilter(request, response);
     if (logger.isInfoEnabled()) {
-      logger.info("{}", response.getStatus());
+      logger.info("{} {}", response.getStatus(), GsonUtil.toJson(ApiContext.getContext().getApiResult()));
     }
     MdcUtil.clear();
     ApiContext.release();

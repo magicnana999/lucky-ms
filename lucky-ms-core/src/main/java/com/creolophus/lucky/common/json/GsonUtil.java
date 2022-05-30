@@ -85,8 +85,8 @@ public class GsonUtil {
 
   /**
    * type 可以是 ProductAppendClassVo.class,如果 ProductAppendClassVo 中有 Object 或者泛型,那么它将是 LinkedTreeMap
-   * 类型. type,可以是 new
-   * TypeToken<ProductAppendClassVo<Product>>(){}.getType();如果ProductAppendClassVo中有 Object
+   * 类型.
+   * type,可以是 new TypeToken<ProductAppendClassVo<Product>>(){}.getType();如果ProductAppendClassVo中有 Object
    * 或者泛型,那么它将是 Product 类型.
    */
   public static <T> T toJava(String string, Type type) {

@@ -79,6 +79,8 @@ public class LoggerAspect {
           + "|| execution(* com..*.cache..*(..))"
           + "|| execution(* com..*.assemble..*(..))"
           + "|| execution(* com..*.consumer..*(..))"
+          + "|| execution(* com..*.producer..*(..))"
+          + "|| execution(* com..*.mq..*(..))"
           + "|| execution(* com..*.iot..*(..))"
           + "|| execution(* com..*.feign..*(..))")
   public void inService() {}

@@ -36,7 +36,6 @@ public class LoggerAspect {
   public void doAfter(JoinPoint joinPoint, Object result) {
     mdcMethod(joinPoint);
     printAfter(joinPoint, result);
-    ApiContext.getContext().setApiResult(result);
   }
 
   @Before("inService()")
@@ -117,7 +116,9 @@ public class LoggerAspect {
 
   private void printAfter(JoinPoint joinPoint, Object result) {
     if (logger.isDebugEnabled()) {
-      getLogger(joinPoint).debug(resultToString(result));
+      String rt = resultToString(result);
+      ApiContext.getContext().setApiResult(rt);
+      getLogger(joinPoint).debug(rt);
     }
   }
 

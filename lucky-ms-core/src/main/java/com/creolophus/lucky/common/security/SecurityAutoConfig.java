@@ -38,7 +38,8 @@ public class SecurityAutoConfig extends WebSecurityConfigurerAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(SecurityAutoConfig.class);
 
-  @Resource private UserDetailsService userDetailsService;
+  @Resource
+  private TokenParser tokenParser;
 
   @Bean
   @ConditionalOnMissingBean
@@ -79,7 +80,7 @@ public class SecurityAutoConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userDetailsService);
+    auth.userDetailsService(tokenParser);
   }
 
   @Bean(name = BeanIds.AUTHENTICATION_MANAGER)

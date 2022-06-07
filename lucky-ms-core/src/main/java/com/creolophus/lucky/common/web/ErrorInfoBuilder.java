@@ -157,11 +157,11 @@ public class ErrorInfoBuilder {
     //      return e0(HttpStatus.BAD_REQUEST, e.getMessage());
     //    }
 
-    else if(e instanceof AccessDeniedException){
-      AccessDeniedException ee = (AccessDeniedException) e;
-      return e0(HttpStatus.FORBIDDEN);
-
-    }
+//    else if(e instanceof AccessDeniedException){
+//      AccessDeniedException ee = (AccessDeniedException) e;
+//      return e0(HttpStatus.FORBIDDEN);
+//
+//    }
 
     // Security相关的401和403异常，走这里。但是，必须有额外的message
     else if (e instanceof HttpStatusException) {

@@ -2,9 +2,7 @@ package com.creolophus.lucky.common.web;
 
 import com.creolophus.lucky.common.context.ApiContext;
 import com.creolophus.lucky.common.error.ApiError;
-import com.creolophus.lucky.common.exception.AccessDeniedException;
 import com.creolophus.lucky.common.exception.BrokenException;
-import com.creolophus.lucky.common.exception.DirectlyMessageException;
 import com.creolophus.lucky.common.exception.ErrorCodeException;
 import com.creolophus.lucky.common.exception.HttpStatusException;
 import com.creolophus.lucky.common.json.GsonUtil;
@@ -25,7 +23,6 @@ import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -50,7 +47,22 @@ public class ErrorInfoBuilder {
   }
 
   protected Object apiResult(int code, String message){
-    return new ApiResult(code, message);
+    return new ApiResult(){
+      @Override
+      public int getCode() {
+        return code;
+      }
+
+      @Override
+      public Object getData() {
+        return null;
+      }
+
+      @Override
+      public String getMessage() {
+        return message;
+      }
+    };
   }
 
   public ResponseEntity e0(HttpStatus httpStatus) {
@@ -82,7 +94,6 @@ public class ErrorInfoBuilder {
         httpStatus.value(),
         httpStatus.getReasonPhrase(),
         apiResult.getMessage());
-    apiResult.setCode(httpStatus.value());
     return getResponseEntity(apiResult, httpStatus);
   }
 
@@ -157,11 +168,11 @@ public class ErrorInfoBuilder {
     //      return e0(HttpStatus.BAD_REQUEST, e.getMessage());
     //    }
 
-    else if (e instanceof AccessDeniedException) {
-      AccessDeniedException ee = (AccessDeniedException) e;
-      return e0(HttpStatus.FORBIDDEN, ee.getApiResult());
-
-    }
+//    else if (e instanceof AccessDeniedException) {
+//      AccessDeniedException ee = (AccessDeniedException) e;
+//      return e0(HttpStatus.FORBIDDEN, ee.getApiResult());
+//
+//    }
 
     // Security相关的401和403异常，走这里。但是，必须有额外的message
     else if (e instanceof HttpStatusException) {
@@ -224,12 +235,12 @@ public class ErrorInfoBuilder {
     }
 
     // 抛一个ErrorCodeException，直接返回此ErrorCode
-    else if (e instanceof DirectlyMessageException) {
-      DirectlyMessageException ee = (DirectlyMessageException) e;
-      ee.setUri(request.getRequestURI());
-      HttpStatus httpStatus = HttpStatus.resolve(ee.getHttpCode());
-      return e0(httpStatus==null?HttpStatus.BAD_REQUEST:httpStatus, ee.getMessage());
-    }
+//    else if (e instanceof DirectlyMessageException) {
+//      DirectlyMessageException ee = (DirectlyMessageException) e;
+//      ee.setUri(request.getRequestURI());
+//      HttpStatus httpStatus = HttpStatus.resolve(ee.getHttpCode());
+//      return e0(httpStatus==null?HttpStatus.BAD_REQUEST:httpStatus, ee.getMessage());
+//    }
 
 
     // 内部服务错误，熔断，返回给客户端500，"暂时无法提供服务"

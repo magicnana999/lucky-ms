@@ -22,7 +22,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 @EnableSwagger2WebMvc
 @Configuration
 @ConditionalOnClass(EnableSwagger2WebMvc.class)
-@Profile({"dev", "test", "local"})
+@Profile({"default","dev", "test", "local"})
 public class SwaggerAutoConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(SwaggerAutoConfig.class);

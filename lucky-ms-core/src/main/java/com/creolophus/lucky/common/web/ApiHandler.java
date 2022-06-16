@@ -25,8 +25,7 @@ public class ApiHandler {
   private List<ApiSecurity> apiSecurityList = new ArrayList();
 
   public void preHandle(Api api, HttpServletRequest request,HttpServletResponse response) {
-    handleScope(api, request);
-    HandlePreSecurity(api, request,response);
+
   }
 
   protected void HandlePreSecurity(Api api, HttpServletRequest request,HttpServletResponse response) {
@@ -65,12 +64,6 @@ public class ApiHandler {
     }
   }
 
-  public void postHandle(Api api, HttpServletRequest request, HttpServletResponse response, Exception ex) {
-    if(ex!=null){
-      HandlePostSecurity(api,request,response);
-    }
-  }
-
   protected void authenticate(Api api,HttpServletRequest request,HttpServletResponse response) {
     if (StringUtils.isNoneBlank(api.auth())) {
       for (ApiSecurity apiSecurity : apiSecurityList) {
@@ -83,5 +76,9 @@ public class ApiHandler {
   }
 
   protected void completion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+  }
+
+  public boolean ignore(HttpServletRequest request) {
+    return false;
   }
 }

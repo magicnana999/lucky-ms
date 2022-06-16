@@ -20,53 +20,51 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
   @Resource
   private Api defaultApi;
 
-  protected void authenticate(HttpServletRequest request, HttpServletResponse response,
-      Object handler) {
-    if (handler instanceof HandlerMethod) {
-      HandlerMethod hm = (HandlerMethod) handler;
-      Api api = hm.getMethodAnnotation(Api.class);
-      if (api == null) {
-        api = defaultApi;
-      }
-      ApiContext.getContext().setApi(api);
-      apiHandler.authenticate(api, request, response);
-      apiHandler.preHandle(api, request, response);
-    }
-  }
-
-  protected void completion(HttpServletRequest request, HttpServletResponse response,
-      Object handler, Exception ex) {
-    if (handler instanceof HandlerMethod) {
-      HandlerMethod hm = (HandlerMethod) handler;
-      Api api = hm.getMethodAnnotation(Api.class);
-      if (api == null) {
-        api = defaultApi;
-      }
-      ApiContext.getContext().setApi(api);
-      apiHandler.postHandle(api, request, response, ex);
-    }
-    apiHandler.completion(request, response, handler, ex);
-  }
-
   public String getPathPatterns() {
-    return "/btb/**";
+    return "/**";
   }
 
-  protected void preHandle(HttpServletRequest request) {
-    MdcUtil.init(request.getRequestURI(), null);
-  }
 
   @Override
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
-    preHandle(request);
-    authenticate(request, response, handler);
+
+    MdcUtil.init(request.getRequestURI(), null);
+    if(apiHandler.ignore(request)){
+      return true;
+    }
+
+    if (handler instanceof HandlerMethod) {
+      HandlerMethod hm = (HandlerMethod) handler;
+      Api api = hm.getMethodAnnotation(Api.class);
+      if (api == null) {
+        api = defaultApi;
+      }
+      ApiContext.getContext().setApi(api);
+      apiHandler.preHandle(api, request, response);
+      apiHandler.handleScope(api, request);
+      apiHandler.authenticate(api, request, response);
+      apiHandler.HandlePreSecurity(api, request, response);
+    }
+
     return true;
   }
 
   @Override
   public void afterCompletion(
       HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-    completion(request, response, handler, ex);
+    if (handler instanceof HandlerMethod) {
+      HandlerMethod hm = (HandlerMethod) handler;
+      Api api = hm.getMethodAnnotation(Api.class);
+      if (api == null) {
+        api = defaultApi;
+      }
+      ApiContext.getContext().setApi(api);
+
+      if (ex != null) {
+        apiHandler.HandlePostSecurity(api, request, response);
+      }
+      apiHandler.completion(request, response, handler, ex);
+    }
   }
 }

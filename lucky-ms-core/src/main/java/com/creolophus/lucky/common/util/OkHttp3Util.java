@@ -35,8 +35,8 @@ public class OkHttp3Util {
 
   private static void doAsyncGet(
       String baseUrl,
-      Map<String, String> params,
-      Map<String, String> headersMap,
+      Map<String, Object> params,
+      Map<String, Object> headersMap,
       Callback callback) {
     OkHttpClient client = OkHttp3Util.getInstance();
     String url = urlJoin(baseUrl, params);
@@ -52,17 +52,20 @@ public class OkHttp3Util {
   }
 
   private static void doAsyncPost(
-      String url, Map<String, String> params, Map<String, String> headersMap, Callback callback) {
+      String url, Map<String, Object> params, Map<String, Object> headersMap, Callback callback) {
     FormBody.Builder builder = new FormBody.Builder();
-    for (Map.Entry<String, String> entry : params.entrySet()) {
-      builder.add(entry.getKey(), entry.getValue());
+    for (Map.Entry<String, Object> entry : params.entrySet()) {
+      if(null == entry.getValue()){
+        continue;
+      }
+      builder.add(entry.getKey(), entry.getValue().toString());
     }
     FormBody body = builder.build();
     doAsyncPost(url, body, headersMap, callback);
   }
 
   private static void doAsyncPost(
-      String url, RequestBody body, Map<String, String> headersMap, Callback callback) {
+      String url, RequestBody body, Map<String, Object> headersMap, Callback callback) {
     OkHttpClient client = OkHttp3Util.getInstance();
     Request request;
     if (null == headersMap || headersMap.size() == 0) {
@@ -76,7 +79,7 @@ public class OkHttp3Util {
   }
 
   private static Resp doSyncGet(
-      String baseUrl, Map<String, String> params, Map<String, String> headersMap) {
+      String baseUrl, Map<String, Object> params, Map<String, Object> headersMap) {
     OkHttpClient client = OkHttp3Util.getInstance();
     String url = urlJoin(baseUrl, params);
     Request request;
@@ -95,18 +98,21 @@ public class OkHttp3Util {
   }
 
   private static Resp doSyncPost(
-      String url, Map<String, String> params, Map<String, String> headersMap) {
+      String url, Map<String, Object> params, Map<String, Object> headersMap) {
     FormBody.Builder builder = new FormBody.Builder();
     if (params != null && params.size() > 0) {
-      for (Map.Entry<String, String> entry : params.entrySet()) {
-        builder.add(entry.getKey(), entry.getValue());
+      for (Map.Entry<String, Object> entry : params.entrySet()) {
+        if(null == entry.getValue()){
+          continue;
+        }
+        builder.add(entry.getKey(), entry.getValue().toString());
       }
     }
     FormBody body = builder.build();
     return doSyncPost(url, body, headersMap);
   }
 
-  private static Resp doSyncPost(String url, RequestBody body, Map<String, String> headersMap) {
+  private static Resp doSyncPost(String url, RequestBody body, Map<String, Object> headersMap) {
     OkHttpClient client = OkHttp3Util.getInstance();
     Request request;
     if (null == headersMap || headersMap.size() == 0) {
@@ -140,7 +146,7 @@ public class OkHttp3Util {
    * @param params request params
    * @param callback callback
    */
-  public static void get(String baseUrl, Map<String, String> params, Callback callback) {
+  public static void get(String baseUrl, Map<String, Object> params, Callback callback) {
     doAsyncGet(baseUrl, params, null, callback);
   }
 
@@ -153,7 +159,7 @@ public class OkHttp3Util {
    * @param callback call back
    */
   public static void get(
-      String baseUrl, Map<String, String> params, Map<String, String> headers, Callback callback) {
+      String baseUrl, Map<String, Object> params, Map<String, Object> headers, Callback callback) {
     doAsyncGet(baseUrl, params, headers, callback);
   }
 
@@ -165,7 +171,7 @@ public class OkHttp3Util {
    * @param headers request headers
    * @return response okhttp3.Response
    */
-  public static Resp get(String baseUrl, Map<String, String> params, Map<String, String> headers) {
+  public static Resp get(String baseUrl, Map<String, Object> params, Map<String, Object> headers) {
     return doSyncGet(baseUrl, params, headers);
   }
 
@@ -186,7 +192,7 @@ public class OkHttp3Util {
    * @param params request params
    * @return response okhttp3.Response
    */
-  public static Resp get(String baseUrl, Map<String, String> params) {
+  public static Resp get(String baseUrl, Map<String, Object> params) {
     return doSyncGet(baseUrl, params, null);
   }
 
@@ -201,7 +207,7 @@ public class OkHttp3Util {
    * @param params request params
    * @param callback call back
    */
-  public static void post(String url, Map<String, String> params, Callback callback) {
+  public static void post(String url, Map<String, Object> params, Callback callback) {
     doAsyncPost(url, params, null, callback);
   }
 
@@ -214,7 +220,7 @@ public class OkHttp3Util {
    * @param callback call back
    */
   public static void post(
-      String url, Map<String, String> params, Map<String, String> headers, Callback callback) {
+      String url, Map<String, Object> params, Map<String, Object> headers, Callback callback) {
     doAsyncPost(url, params, headers, callback);
   }
 
@@ -239,7 +245,7 @@ public class OkHttp3Util {
    * @param callback call back
    */
   public static void post(
-      String url, String json, Map<String, String> headersMap, Callback callback) {
+      String url, String json, Map<String, Object> headersMap, Callback callback) {
     RequestBody body = RequestBody.create(JSON_TYPE, json);
     doAsyncPost(url, body, headersMap, callback);
   }
@@ -251,7 +257,7 @@ public class OkHttp3Util {
    * @param params request params
    * @return response okhttp3.Response
    */
-  public static Resp post(String url, Map<String, String> params) {
+  public static Resp post(String url, Map<String, Object> params) {
     return doSyncPost(url, params, null);
   }
 
@@ -263,7 +269,7 @@ public class OkHttp3Util {
    * @param headers request headers
    * @return response okhttp3.Response
    */
-  public static Resp post(String url, Map<String, String> params, Map<String, String> headers) {
+  public static Resp post(String url, Map<String, Object> params, Map<String, Object> headers) {
     return doSyncPost(url, params, headers);
   }
 
@@ -287,12 +293,12 @@ public class OkHttp3Util {
    * @param headersMap request headers
    * @return response okhttp3.Response
    */
-  public static Resp post(String url, String json, Map<String, String> headersMap) {
+  public static Resp post(String url, String json, Map<String, Object> headersMap) {
     RequestBody body = RequestBody.create(JSON_TYPE, json);
     return doSyncPost(url, body, headersMap);
   }
 
-  private static Headers setHeaders(Map<String, String> headersParams) {
+  private static Headers setHeaders(Map<String, Object> headersParams) {
     Headers headers;
     Headers.Builder headersBuilder = new Headers.Builder();
     if (headersParams != null) {
@@ -300,30 +306,35 @@ public class OkHttp3Util {
       String key;
       while (iterator.hasNext()) {
         key = iterator.next().toString();
-        headersBuilder.add(key, headersParams.get(key));
+        if(null != headersParams.get(key)){
+          headersBuilder.add(key, headersParams.get(key).toString());
+        }
       }
     }
     headers = headersBuilder.build();
     return headers;
   }
 
-  public static String urlJoin(String url, Map<String, String> params) {
+  public static String urlJoin(String url, Map<String, Object> params) {
     StringBuilder endUrl = new StringBuilder(url);
     if (null == params) {
       return url;
     }
     boolean isFirst = true;
-    Set<Map.Entry<String, String>> entrySet = params.entrySet();
-    for (Map.Entry<String, String> entry : entrySet) {
+    Set<Map.Entry<String, Object>> entrySet = params.entrySet();
+    for (Map.Entry<String, Object> entry : entrySet) {
       if (isFirst && !url.contains("?")) {
         isFirst = false;
         endUrl.append("?");
       } else {
         endUrl.append("&");
       }
+      if(null == entry.getValue()){
+        continue;
+      }
       endUrl.append(entry.getKey());
       endUrl.append("=");
-      endUrl.append(entry.getValue());
+      endUrl.append(entry.getValue().toString());
     }
     return endUrl.toString();
   }
@@ -343,7 +354,7 @@ public class OkHttp3Util {
 
     private String body;
     private int code;
-    private Map<String, String> headers;
+    private Map<String, Object> headers;
     private boolean isSuccessful = false;
     private boolean isError = true;
     private String errorMsg;
@@ -390,7 +401,7 @@ public class OkHttp3Util {
       return code;
     }
 
-    public Map<String, String> getHeaders() {
+    public Map<String, Object> getHeaders() {
       return headers;
     }
 

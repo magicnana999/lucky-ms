@@ -4,10 +4,8 @@ import com.creolophus.lucky.common.context.ApiContext;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.beetl.sql.annotation.entity.Auto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -30,7 +28,7 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
       HttpServletRequest request, HttpServletResponse response, Object handler) {
 
     MdcUtil.init(request.getRequestURI(), null);
-    if(apiHandler.ignore(request)){
+    if (apiHandler.ignore(request)) {
       return true;
     }
 
